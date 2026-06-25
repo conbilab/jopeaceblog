@@ -77,6 +77,22 @@ recommend: "창가 콘센트 자리"
 
 ---
 
+## 2.5 영상·사진 올리기 (우분투 홈서버 연동)
+
+큰 파일은 블로그(깃)에 넣지 않고 **우분투 홈서버(MinIO)** 에 두고 URL로 불러옵니다. 설정은 [`server/README.md`](server/README.md) 참고.
+
+- **편집한 영상** → 유튜브에 올리고 글의 `videoUrl`에 링크: `https://youtu.be/...`
+- **그냥 찍은 raw 영상** → 우분투 서버 링크: `videoUrl: https://media.jopis.kr/blog/2026/clip.mp4`
+- **사진** → `cover`나 본문에 `https://media.jopis.kr/blog/...jpg`
+
+블로그가 유튜브·Vimeo는 임베드 플레이어로, 내 서버 mp4는 재생 플레이어로 **자동 구분**해서 띄웁니다.
+본문 중간에 여러 개 넣고 싶으면 마크다운에 그대로:
+```html
+<video src="https://media.jopis.kr/blog/clip.mp4" controls></video>
+```
+
+> 🔒 우분투는 **Cloudflare Tunnel**로 공개해 공유기 포트를 안 엽니다(집 IP 숨김). 회사·자동화 시스템은 계속 Tailscale 내부에만 두세요. (도메인이 정해지면 `vercel.json`·`astro.config.mjs`의 `media.jopis.kr`를 실제 주소로 바꾸기)
+
 ## 3. 배포하기 (GitHub + Vercel, 처음 한 번)
 
 1. **GitHub 저장소 만들기**: GitHub에서 새 저장소(repository)를 만들고, 이 `jopis-blog` 폴더 전체를 올립니다(push).

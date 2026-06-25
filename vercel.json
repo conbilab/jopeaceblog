@@ -8,7 +8,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; img-src 'self' data: https://avatars.githubusercontent.com https://*.githubusercontent.com; script-src 'self' 'sha256-8dTomy9b5XJ3KY8mdrI1XrrU6rj5FCUnrHtE65Ye+kg=' https://giscus.app; style-src 'self' 'unsafe-inline'; font-src 'self'; frame-src https://giscus.app; connect-src 'self' https://giscus.app https://api.github.com; manifest-src 'self'; upgrade-insecure-requests"
+          "value": "default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; img-src 'self' data: https://media.jopis.kr https://avatars.githubusercontent.com https://*.githubusercontent.com; media-src 'self' https://media.jopis.kr; script-src 'self' 'sha256-8dTomy9b5XJ3KY8mdrI1XrrU6rj5FCUnrHtE65Ye+kg=' https://giscus.app; style-src 'self' 'unsafe-inline'; font-src 'self'; frame-src https://giscus.app https://www.youtube-nocookie.com https://player.vimeo.com; connect-src 'self' https://giscus.app https://api.github.com; manifest-src 'self'; upgrade-insecure-requests"
         },
         { "key": "Strict-Transport-Security", "value": "max-age=63072000; includeSubDomains; preload" },
         { "key": "X-Content-Type-Options", "value": "nosniff" },

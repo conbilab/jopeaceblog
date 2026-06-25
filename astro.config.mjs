@@ -32,8 +32,9 @@ export default defineConfig({
     rehypePlugins: [],
   },
   image: {
-    // 외부 이미지(예: 강의 사진 URL)도 최적화 허용
     responsiveStyles: true,
+    // ⚠️ 미디어 도메인이 정해지면 바꿔주세요 — 우분투(MinIO)에서 오는 사진을 <Image>로 최적화 허용
+    domains: ['media.jopis.kr'],
   },
   build: {
     // CSS도 외부 파일로 (CSP 단순화). 단, scoped <style>은 head 인라인 → style-src 'unsafe-inline' 허용.

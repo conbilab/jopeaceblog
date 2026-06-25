@@ -1,0 +1,53 @@
+# ============================================================
+#  조피스 미디어 서버 — MinIO(사진·영상 저장) + Cloudflare Tunnel(안전 공개)
+#  우분투 홈서버에서:  docker compose up -d
+#
+#  구조:  블로그 <img>/<video>  →  https://media.jopis.kr/blog/...  →  Cloudflare(캐시/HTTPS)
+#         →  Cloudflare Tunnel(cloudflared)  →  minio:9000 (도커 내부망, 포트 안 엶)
+#
+#  보안 원칙:
+#   - 공유기 포트 0개. cloudflared가 바깥으로 '나가서' 연결 → 집 IP 숨김, 인바운드 차단.
+#   - 외부에 노출되는 건 오직 media.jopis.kr → minio:9000 (읽기 전용 버킷)뿐.
+#   - 관리 콘솔(9001)은 127.0.0.1(또는 Tailscale)에서만. 회사/자동화 시스템은 그대로 Tailscale 내부.
+# ============================================================
+
+name: jopis
+
+services:
+  minio:
+    image: minio/minio:latest
+    container_name: jopis-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:?set in .env}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?set in .env}
+      # 공개 객체 URL을 깔끔하게 (선택)
+      MINIO_BROWSER_REDIRECT_URL: https://media.jopis.kr/console
+    volumes:
+      - ./minio-data:/data
+    networks: [jopis]
+    ports:
+      # 관리 콘솔만 로컬에 노출(외부 X). Tailscale로 접속하려면 0.0.0.0 대신 tailscale IP 사용.
+      - "127.0.0.1:9001:9001"
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: jopis-cloudflared
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      # Cloudflare Zero Trust 대시보드에서 발급한 터널 토큰
+      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN:?set in .env}
+    networks: [jopis]
+    depends_on:
+      - minio
+
+networks:
+  jopis:
+    driver: bridge

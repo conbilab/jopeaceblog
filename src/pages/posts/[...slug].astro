@@ -3,6 +3,7 @@ import { render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PostCard from '../../components/PostCard.astro';
 import Comments from '../../components/Comments.astro';
+import VideoEmbed from '../../components/VideoEmbed.astro';
 import { getCategory, GROWTH } from '../../lib/categories';
 import { formatDate, readingTime, getRelatedPosts, getPublishedPosts, excerpt } from '../../lib/utils';
 import { SITE } from '../../lib/site';
@@ -74,9 +75,14 @@ const workMeta = data.category === 'work' && (data.client || data.role || data.r
       </div>
     </header>
 
-    {data.cover && (
+    {data.cover && !data.videoUrl && (
       <div class="post-cover wrap wrap-wide reveal">
         <img src={data.cover} alt={data.coverAlt ?? ''} loading="eager" />
+      </div>
+    )}
+    {data.videoUrl && (
+      <div class="post-cover wrap wrap-wide reveal">
+        <VideoEmbed url={data.videoUrl} title={data.title} poster={data.cover} />
       </div>
     )}
 

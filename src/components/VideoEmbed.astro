@@ -1,0 +1,70 @@
+---
+/**
+ * 영상 임베드 — URL만 주면 자동 판별.
+ *  - 유튜브(youtube.com / youtu.be / shorts) → youtube-nocookie 임베드(프라이버시)
+ *  - Vimeo → player 임베드
+ *  - 그 외(.mp4/.webm/.mov 또는 media.* 도메인) → 내 서버 self-host <video>
+ * 편집 영상은 유튜브 링크, 그냥 찍은 raw 영상은 우분투(MinIO) 링크를 넣으면 됩니다.
+ */
+interface Props {
+  url: string;
+  title?: string;
+  poster?: string;
+  caption?: string;
+}
+const { url, title = '영상', poster, caption } = Astro.props;
+
+function parse(u: string): { type: 'youtube' | 'vimeo' | 'file'; id?: string } {
+  const yt = u.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([\w-]{11})/);
+  if (yt) return { type: 'youtube', id: yt[1] };
+  const vi = u.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+  if (vi) return { type: 'vimeo', id: vi[1] };
+  return { type: 'file' };
+}
+const m = parse(url);
+---
+
+<figure class="video-figure">
+  {m.type === 'youtube' ? (
+    <div class="video-embed">
+      <iframe
+        src={`https://www.youtube-nocookie.com/embed/${m.id}`}
+        title={title}
+        loading="lazy"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerpolicy="strict-origin-when-cross-origin"
+        allowfullscreen
+      ></iframe>
+    </div>
+  ) : m.type === 'vimeo' ? (
+    <div class="video-embed">
+      <iframe
+        src={`https://player.vimeo.com/video/${m.id}`}
+        title={title}
+        loading="lazy"
+        allow="autoplay; fullscreen; picture-in-picture"
+        referrerpolicy="strict-origin-when-cross-origin"
+        allowfullscreen
+      ></iframe>
+    </div>
+  ) : (
+    <div class="video-embed">
+      <video controls preload="metadata" poster={poster} playsinline>
+        <source src={url} />
+        브라우저가 이 영상을 재생할 수 없어요.
+      </video>
+    </div>
+  )}
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>
+
+<style>
+  .video-figure { margin: 1.8rem 0; }
+  .video-embed {
+    position: relative; aspect-ratio: 16 / 9; border-radius: var(--r-md); overflow: hidden;
+    border: 1px solid var(--line); box-shadow: var(--shadow-sm); background: #0a0a0a;
+  }
+  .video-embed iframe,
+  .video-embed video { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; object-fit: contain; background: #0a0a0a; }
+  figcaption { margin-top: 0.7rem; font-size: var(--step--1); color: var(--ink-mute); text-align: center; }
+</style>

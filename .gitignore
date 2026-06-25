@@ -27,3 +27,7 @@ Thumbs.db
 .vscode/
 .idea/
 .claude/
+
+# 미디어 서버 (우분투에서 생성되는 데이터 — 깃에 올리지 않음)
+server/minio-data/
+server/.env
