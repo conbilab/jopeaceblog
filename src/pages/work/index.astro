@@ -1,0 +1,51 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import { getProjects } from '../../lib/utils';
+
+const projects = await getProjects();
+const active = projects.filter((p) => p.data.status === 'active');
+const others = projects.filter((p) => p.data.status !== 'active');
+---
+
+<BaseLayout title="일과 프로젝트" description="조피스가 실제로 해온 일과 배우고 있는 것. 마케팅·AI 영상·콘텐츠·세차의고수·홈페이지 제작 등.">
+  <header class="work-head">
+    <div class="wrap measure">
+      <h1 class="page-title">일과 프로젝트</h1>
+      <p class="page-lead">
+        제가 어떤 일을 하는 사람인지 보여주는 페이지입니다.
+        다만 “나를 고용하세요”보다, <strong>실제로 해온 일과 지금 배우고 있는 것</strong>이 먼저 보였으면 합니다.
+      </p>
+    </div>
+  </header>
+
+  <section class="work-body">
+    <div class="wrap">
+      {active.length > 0 && (
+        <>
+          <p class="grp-label">진행 중</p>
+          <div class="proj-grid">{active.map((p, i) => (<ProjectCard project={p} index={i} />))}</div>
+        </>
+      )}
+      {others.length > 0 && (
+        <>
+          <p class="grp-label grp-label--mt">완료 · 보류</p>
+          <div class="proj-grid">{others.map((p, i) => (<ProjectCard project={p} index={i} />))}</div>
+        </>
+      )}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .work-head { padding-top: clamp(2rem, 4vw, 3rem); padding-bottom: 1.2rem; border-bottom: 1px solid var(--line); }
+  .page-title { font-size: var(--step-4); font-weight: 800; letter-spacing: -0.04em; color: var(--ink-strong); }
+  .page-lead { margin-top: 0.8rem; color: var(--ink-soft); font-size: 1.05rem; line-height: 1.7; max-width: 50ch; }
+  .page-lead strong { color: var(--ink-strong); }
+  .work-body { padding-top: 2rem; }
+  .grp-label { font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-mute); margin-bottom: 1rem; }
+  .grp-label--mt { margin-top: 2.5rem; }
+  .proj-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.1rem; }
+  @media (max-width: 880px) { .proj-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 560px) { .proj-grid { grid-template-columns: 1fr; } }
+</style>

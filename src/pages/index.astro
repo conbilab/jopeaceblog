@@ -1,226 +1,200 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import PostCard from '../components/PostCard.astro';
-import Logo from '../components/Logo.astro';
-import { SITE, STATS } from '../lib/site';
-import { CATEGORY_ORDER, CATEGORIES } from '../lib/categories';
-import { getPublishedPosts, getFeaturedPosts } from '../lib/utils';
+import RecordCard from '../components/RecordCard.astro';
+import FeaturedCard from '../components/FeaturedCard.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import { SITE } from '../lib/site';
+import { TYPE_ORDER, TYPES } from '../lib/taxonomy';
+import { getPublishedRecords, getProjects, getStandards, getRecordsByType, getFeaturedRecords } from '../lib/utils';
 
-const posts = await getPublishedPosts();
-const featured = await getFeaturedPosts(3);
-const latest = posts.slice(0, 7);
-const counts = Object.fromEntries(CATEGORY_ORDER.map((k) => [k, posts.filter((p) => p.data.category === k).length]));
+const records = await getPublishedRecords();
+const big = (await getFeaturedRecords(1))[0] ?? records[0];
+const smallFeatured = records.filter((r) => r.id !== big?.id).slice(0, 4);
+const projects = (await getProjects()).slice(0, 6);
+const standards = (await getStandards()).slice(0, 4);
+const goodThings = (await getRecordsByType('food-place')).slice(0, 3);
+const learning = (await getRecordsByType('learning')).slice(0, 3);
+const chips = TYPE_ORDER.map((k) => TYPES[k]);
 ---
 
 <BaseLayout>
-  <!-- ===================== HERO ===================== -->
+  <!-- 1) HERO -->
   <section class="hero">
-    <div class="hero-orb" aria-hidden="true"></div>
+    <div class="hero-deco" aria-hidden="true">
+      <span class="orb orb-1"></span><span class="orb orb-2"></span>
+      <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+    </div>
     <div class="wrap hero-inner">
-      <div class="hero-copy">
-        <span class="kicker">JOPIS — A record of making peace</span>
-        <h1 class="hero-title display">
-          화려하지 않아도 됩니다.<br />
-          <em>본질을</em> 기록합니다.
-        </h1>
-        <p class="hero-lead">
-          안녕하세요, <strong>콘텐츠로 평화를 만드는 사람</strong> 조재빈입니다.
-          대전에서 1인 기업 <a href="/about" class="u-line">피스웍스</a>를 운영하며,
-          일하고 · 생각하고 · 만들고 · 먹고 · 떠난 모든 순간을 이곳에 정직하게 적습니다.
-        </p>
-        <div class="hero-cta">
-          <a href="/about" class="btn btn-primary">저는 이런 사람입니다 →</a>
-          <a href="/log" class="btn btn-ghost">기록 둘러보기</a>
-        </div>
-        <ul class="stats" role="list">
-          {STATS.map((s) => (
-            <li class="stat">
-              <span class="stat-v num">{s.value}</span>
-              <span class="stat-l">{s.label}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <div class="hero-figure reveal">
-        <div class="hf-frame">
-          <img src="/images/press-photo.jpg" alt="조재빈(조피스) — 'ALL GOOD' 벽 앞에서" loading="eager" />
-          <span class="hf-badge"><Logo size={22} stroke={2.4} /> 조피스</span>
-        </div>
-        <p class="hf-cap"><span class="num">2024</span> · 중도일보 인터뷰에서. “비싼 광고 없이도, 제대로 설명하면 승부할 수 있습니다.”</p>
+      <span class="hero-kicker">{SITE.titleEn} · 개인 기록장</span>
+      <h1 class="hero-name">{SITE.title}</h1>
+      <p class="hero-sub">{SITE.subtitle}</p>
+      <p class="hero-slogan"><span class="hs-mark">“</span>{SITE.slogan}<span class="hs-line" aria-hidden="true"></span></p>
+      <p class="hero-body">
+        이곳은 나를 포장하는 공간이 아니라, 사람으로 살아가며 보고 느끼고 행동한 것을 남기는 기록장입니다.
+        마케팅, AI, 콘텐츠, 사업 운영, 배움, 맛과 장소, 그리고 지키고 싶은 기준들을 이곳에 기록합니다.
+      </p>
+      <div class="hero-cta">
+        <a href="/records" class="btn btn-primary">최근 기록 보기</a>
+        <a href="/standards" class="btn btn-ghost">나의 기준 보기</a>
+        <a href="/now" class="btn btn-text">지금 하는 일 →</a>
       </div>
     </div>
   </section>
 
-  <!-- ===================== 큐레이션: 대표 글 ===================== -->
-  {featured.length > 0 && (
+  <!-- 2) FEATURED -->
+  {big && (
     <section class="section-sm">
       <div class="wrap">
-        <div class="sec-head">
-          <span class="kicker kicker--caps">Start here</span>
-          <h2 class="h2 display">처음 오셨다면, 이 글부터</h2>
-          <p class="lead">명함을 보고 오셨나요? 저를 가장 잘 보여주는 글 몇 개를 골라두었습니다.</p>
-        </div>
-        <div class="feature-grid">
-          {featured.map((post, i) => (
-            <PostCard post={post} variant={i === 0 ? 'feature' : 'default'} index={i} />
-          ))}
+        <div class="sec-head"><h2 class="sec-title">대표 기록</h2><a href="/records" class="sec-more">전체 기록 →</a></div>
+        <div class="featured">
+          <FeaturedCard record={big} />
+          <div class="feat-small">
+            {smallFeatured.map((r, i) => (<RecordCard record={r} index={i} compact />))}
+          </div>
         </div>
       </div>
     </section>
   )}
 
-  <!-- ===================== 6개 코너 ===================== -->
-  <section class="section corners-sec">
-    <div class="wrap">
-      <div class="sec-head">
-        <span class="kicker kicker--caps">The corners</span>
-        <h2 class="h2 display">여섯 개의 기록 코너</h2>
-        <p class="lead">무거운 글도, 가벼운 단상도 한곳에. 보고 싶은 결을 골라 들어오세요.</p>
-      </div>
-      <div class="corners">
-        {CATEGORY_ORDER.map((k, i) => {
-          const c = CATEGORIES[k];
-          return (
-            <a href={`/category/${k}`} class="corner card reveal" data-delay={String((i % 4) + 1)} style={`--cat: var(${c.colorVar}); --cat-bg: var(${c.bgVar});`}>
-              <span class="corner-emoji" aria-hidden="true">{c.emoji}</span>
-              <span class="corner-head">
-                <span class="corner-name">{c.name}</span>
-                <span class="corner-count num">{counts[k] ?? 0}</span>
-              </span>
-              <span class="corner-label">{c.label}</span>
-              <span class="corner-concept">{c.concept}</span>
-              <span class="corner-go" aria-hidden="true">들어가기 →</span>
-            </a>
-          );
-        })}
-      </div>
-    </div>
-  </section>
-
-  <!-- ===================== 최신 기록 ===================== -->
+  <!-- 3) RECORD TYPES -->
   <section class="section-sm">
     <div class="wrap">
-      <div class="sec-head sec-head--row">
-        <div>
-          <span class="kicker kicker--caps">Latest</span>
-          <h2 class="h2 display">요즘의 기록</h2>
-        </div>
-        <a href="/log" class="btn-text">전체 보기</a>
+      <p class="chips-label">내가 자주 기록하는 것</p>
+      <div class="chips">
+        {chips.map((c) => (
+          <a href={`/records?type=${c.key}`} class="chip-link" style={`--bg: var(${c.bg}); --ink: var(${c.ink});`}><span class="ce">{c.emoji}</span>{c.label}</a>
+        ))}
+        <a href="/standards" class="chip-link chip-link--std"><span class="ce">🕊️</span>지키고 싶은 것</a>
       </div>
-      {latest.length > 0 ? (
-        <div class="latest-list">
-          {latest.map((post, i) => (<PostCard post={post} variant="list" index={i} />))}
-        </div>
-      ) : (
-        <p class="empty card card--dashed">아직 기록이 없습니다. 곧 첫 글이 올라옵니다. 🌱</p>
-      )}
     </div>
   </section>
 
-  <!-- ===================== 가치 / 신뢰 ===================== -->
-  <section class="section values-sec">
-    <div class="wrap values-inner">
-      <div class="values-copy reveal">
-        <span class="kicker">Why I write</span>
-        <h2 class="h2 display">자랑하려고 쓰지 않습니다.<br/>증명하려고 씁니다.</h2>
-        <p class="lead">
-          잘된 것도, 망한 것도 다 적습니다. 매끈한 성공담보다 정직한 과정이 사람을 더 믿게 한다고 믿어서요.
-          이 기록이 쌓이면, 굳이 설명하지 않아도 제가 어떤 사람인지 아실 거예요.
-        </p>
-        <a href="/about" class="btn-text">제 이야기 전부 읽기</a>
+  <!-- 4) STANDARDS -->
+  <section class="section standards-sec">
+    <div class="wrap">
+      <div class="sec-head"><h2 class="sec-title">나의 기준</h2><a href="/standards" class="sec-more">전부 보기 →</a></div>
+      <p class="sec-lead">완벽하다는 뜻이 아니라, 계속 이 방향으로 돌아오기 위한 기준입니다.</p>
+      <div class="std-grid">
+        {standards.map((s, i) => (
+          <a href={`/standards#${s.id}`} class="std-card reveal" data-delay={String((i % 4) + 1)}>
+            <span class="std-n">{String(s.data.order).padStart(2, '0')}</span>
+            <span class="std-t">{s.data.title}</span>
+            <span class="std-s">{s.data.summary}</span>
+            <span class="std-go" aria-hidden="true">→</span>
+          </a>
+        ))}
       </div>
-      <ul class="values-list" role="list">
-        <li class="vrow reveal" data-delay="1"><span class="vrow-ic">📰</span><div><b>중도일보 보도</b><span>‘대전 마케팅 프로젝트 100’ — 소상공인 무료 컨설팅</span></div></li>
-        <li class="vrow reveal" data-delay="2"><span class="vrow-ic">🏪</span><div><b>전국 90개 가맹점</b><span>세차 프랜차이즈 온라인 마케팅 전담</span></div></li>
-        <li class="vrow reveal" data-delay="3"><span class="vrow-ic">🎬</span><div><b>영상 500편+</b><span>드라마·광고·홍보 / 기획부터 촬영까지</span></div></li>
-        <li class="vrow reveal" data-delay="4"><span class="vrow-ic">🕊️</span><div><b>수익의 1% 기부</b><span>매년 아이들에게 — 말보다 행동으로</span></div></li>
-      </ul>
+    </div>
+  </section>
+
+  <!-- 5) WORK -->
+  <section class="section">
+    <div class="wrap">
+      <div class="sec-head"><h2 class="sec-title">일과 프로젝트</h2><a href="/work" class="sec-more">전부 보기 →</a></div>
+      <div class="proj-grid">{projects.map((p, i) => (<ProjectCard project={p} index={i} />))}</div>
+    </div>
+  </section>
+
+  <!-- 6) GOOD THINGS -->
+  {goodThings.length > 0 && (
+    <section class="section good-sec">
+      <div class="wrap">
+        <div class="sec-head"><h2 class="sec-title">좋았던 것들</h2><a href="/good-things" class="sec-more">더 보기 →</a></div>
+        <p class="sec-lead">전문가의 추천이 아니라, 제가 무엇을 좋다고 느끼는 사람인지 보여주는 기록입니다.</p>
+        <div class="rec-grid">{goodThings.map((r, i) => (<RecordCard record={r} index={i} />))}</div>
+      </div>
+    </section>
+  )}
+
+  <!-- 7) LEARNING -->
+  {learning.length > 0 && (
+    <section class="section">
+      <div class="wrap">
+        <div class="sec-head"><h2 class="sec-title">배운 것들</h2><a href="/learning" class="sec-more">더 보기 →</a></div>
+        <div class="rec-grid">{learning.map((r, i) => (<RecordCard record={r} index={i} />))}</div>
+      </div>
+    </section>
+  )}
+
+  <!-- 8) CTA -->
+  <section class="section cta-sec">
+    <div class="wrap">
+      <div class="cta-box">
+        <p class="cta-text">함께 일하거나 이야기 나누고 싶은 일이 있다면 연락 주세요.<br />마케팅, 콘텐츠, AI 활용, 홈페이지 제작, 강의와 관련된 일을 함께할 수 있습니다.</p>
+        <a href="/contact" class="btn btn-ghost">연락하기</a>
+      </div>
     </div>
   </section>
 </BaseLayout>
 
 <style>
-  /* ---------- HERO ---------- */
-  .hero { position: relative; overflow: hidden; padding-block: clamp(2.5rem, 5vw, 5rem) clamp(3rem, 6vw, 6rem);
-    background: radial-gradient(120% 120% at 85% -5%, color-mix(in srgb, var(--brand-mid) 12%, transparent), transparent 55%),
-      radial-gradient(90% 90% at -5% 110%, color-mix(in srgb, var(--gold) 9%, transparent), transparent 55%); }
-  .hero-orb { position: absolute; top: -10%; right: -8%; width: 38rem; height: 38rem; border-radius: 50%; z-index: 0; pointer-events: none;
-    background: radial-gradient(circle, color-mix(in srgb, var(--brand-light) 16%, transparent), transparent 65%); filter: blur(40px); }
-  .hero-inner { position: relative; z-index: 1; display: grid; grid-template-columns: 1.15fr 0.85fr; gap: clamp(2rem, 5vw, 4.5rem); align-items: center; }
-  .hero-title { font-size: var(--step-6); font-weight: 420; margin-top: 1.1rem; }
-  .hero-title em { font-style: italic; color: var(--brand); }
-  .hero-lead { margin-top: 1.6rem; font-size: var(--step-1); line-height: 1.65; color: var(--ink-soft); max-width: 36ch; }
-  .hero-lead strong { color: var(--ink-strong); font-weight: 700; }
-  .hero-lead a { color: var(--gold-ink); font-weight: 700; }
-  .hero-cta { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: 1.8rem; }
-  .stats { display: flex; flex-wrap: wrap; gap: 1.8rem; margin-top: 2.4rem; padding-top: 1.6rem; border-top: 1.5px dashed var(--dashed); }
-  .stat { display: flex; flex-direction: column; }
-  .stat-v { font-size: var(--step-2); font-weight: 500; color: var(--brand); line-height: 1; }
-  .stat-l { font-size: 0.82rem; color: var(--ink-mute); margin-top: 0.35rem; font-weight: 600; }
+  /* HERO */
+  .hero { position: relative; overflow: hidden; padding-block: clamp(3rem, 7vw, 6.5rem) clamp(2.5rem, 5vw, 4rem); }
+  .hero-deco { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+  .orb { position: absolute; border-radius: 50%; filter: blur(60px); }
+  .orb-1 { width: 30rem; height: 30rem; top: -10rem; right: -6rem; background: radial-gradient(circle, color-mix(in srgb, var(--color-primary) 22%, transparent), transparent 70%); }
+  .orb-2 { width: 22rem; height: 22rem; bottom: -8rem; left: -6rem; background: radial-gradient(circle, color-mix(in srgb, var(--color-warm) 18%, transparent), transparent 70%); }
+  .dot { position: absolute; width: 7px; height: 7px; border-radius: 50%; }
+  .d1 { background: var(--color-primary); top: 18%; right: 22%; opacity: 0.5; }
+  .d2 { background: var(--color-warm); top: 38%; right: 12%; opacity: 0.55; }
+  .d3 { background: var(--color-green); bottom: 22%; left: 16%; opacity: 0.4; }
+  .hero-inner { position: relative; z-index: 1; max-width: 44rem; }
+  .hero-kicker { font-size: 0.78rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-primary); }
+  .hero-name { font-size: var(--step-5); font-weight: 800; letter-spacing: -0.05em; line-height: 1.02; color: var(--ink-strong); margin-top: 0.8rem; }
+  .hero-sub { margin-top: 1.2rem; font-size: clamp(1.15rem, 2.2vw, 1.5rem); font-weight: 700; color: var(--ink-strong); line-height: 1.5; letter-spacing: -0.02em; max-width: 30ch; }
+  .hero-slogan { position: relative; display: inline-block; margin-top: 0.9rem; font-family: var(--font-serif); font-style: italic; font-size: clamp(1.3rem, 2.4vw, 1.7rem); color: var(--color-primary-ink); }
+  .hs-mark { color: var(--color-warm); }
+  .hs-line { display: block; height: 7px; margin-top: 2px; border-radius: 4px; background: color-mix(in srgb, var(--color-primary) 25%, transparent); }
+  .hero-body { margin-top: 1.5rem; font-size: 1.05rem; line-height: 1.85; color: var(--ink-soft); max-width: 42ch; }
+  .hero-cta { display: flex; flex-wrap: wrap; gap: 0.8rem; align-items: center; margin-top: 2rem; }
 
-  .hero-figure { position: relative; }
-  .hf-frame { position: relative; border-radius: var(--r-lg); overflow: hidden; border: 1px solid var(--line); box-shadow: var(--shadow-lg); rotate: 1.5deg; transition: rotate var(--dur) var(--ease); }
-  .hf-frame:hover { rotate: 0deg; }
-  .hf-frame img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
-  .hf-badge { position: absolute; left: 0.9rem; bottom: 0.9rem; display: inline-flex; align-items: center; gap: 0.4em;
-    background: color-mix(in srgb, var(--bg) 86%, transparent); backdrop-filter: blur(8px); color: var(--brand);
-    font-weight: 800; font-size: 0.82rem; padding: 0.4em 0.8em; border-radius: var(--r-pill); border: 1px solid var(--line); }
-  .hf-cap { margin-top: 0.9rem; font-size: 0.8rem; color: var(--ink-mute); line-height: 1.5; padding-left: 0.2rem; }
+  /* section heads */
+  .sec-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; }
+  .sec-title { font-size: var(--step-2); font-weight: 800; letter-spacing: -0.035em; color: var(--ink-strong); }
+  .sec-more { font-size: 0.9rem; font-weight: 700; color: var(--color-primary); white-space: nowrap; }
+  .sec-more:hover { color: var(--color-primary-deep); }
+  .sec-lead { margin-top: -0.6rem; margin-bottom: 1.5rem; color: var(--ink-mute); font-size: 0.98rem; }
 
-  /* ---------- 섹션 헤더 ---------- */
-  .sec-head { margin-bottom: 2.4rem; max-width: 46ch; }
-  .sec-head .h2 { margin-top: 0.6rem; }
-  .sec-head .lead { margin-top: 0.8rem; }
-  .sec-head--row { display: flex; justify-content: space-between; align-items: flex-end; max-width: none; }
+  /* featured */
+  .featured { display: flex; flex-direction: column; gap: 1.2rem; }
+  .feat-small { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.1rem; }
 
-  /* ---------- 대표 글 그리드 ---------- */
-  .feature-grid { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 1.4rem; }
-  .feature-grid :global(.pc--feature) { grid-row: span 1; }
+  .rec-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
+  .proj-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
 
-  /* ---------- 코너 ---------- */
-  .corners-sec { background: var(--bg-soft); border-block: 1px solid var(--line); }
-  .corners { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4rem; }
-  .corner { display: flex; flex-direction: column; gap: 0.5rem; padding: 1.6rem 1.5rem 1.4rem; position: relative; overflow: hidden; }
-  .corner::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 4px; background: var(--cat); opacity: 0.85; }
-  .corner:hover { border-color: color-mix(in srgb, var(--cat) 45%, transparent); }
-  .corner-emoji { font-size: 1.7rem; }
-  .corner-head { display: flex; align-items: baseline; justify-content: space-between; }
-  .corner-name { font-weight: 800; font-size: var(--step-1); color: var(--ink-strong); letter-spacing: -0.03em; }
-  .corner-count { font-size: 0.95rem; color: var(--cat); font-weight: 600; }
-  .corner-label { font-size: 0.78rem; color: var(--ink-mute); font-weight: 700; letter-spacing: 0.04em; }
-  .corner-concept { font-size: 0.9rem; color: var(--ink-soft); line-height: 1.55; margin-top: 0.2rem; }
-  .corner-go { margin-top: auto; padding-top: 0.8rem; font-size: 0.82rem; font-weight: 700; color: var(--cat); opacity: 0; transform: translateX(-6px); transition: all var(--dur) var(--ease); }
-  .corner:hover .corner-go { opacity: 1; transform: none; }
+  /* chips */
+  .chips-label { font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-mute); font-weight: 800; margin-bottom: 1rem; }
+  .chips { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+  .chip-link { display: inline-flex; align-items: center; gap: 0.4em; font-size: 0.9rem; font-weight: 700; padding: 0.6em 1em; border-radius: var(--r-pill); background: var(--bg, var(--color-primary-soft)); color: var(--ink, var(--color-primary)); transition: transform var(--dur-fast) var(--ease); }
+  .chip-link:hover { transform: translateY(-2px); }
+  .chip-link--std { background: var(--color-primary-soft); color: var(--color-primary-deep); }
 
-  /* ---------- 최신 ---------- */
-  .latest-list { margin-top: 0.5rem; }
-  .empty { padding: 2.5rem; text-align: center; color: var(--ink-mute); }
+  /* standards grid (cards) */
+  .standards-sec { background: var(--bg-soft); border-block: 1px solid var(--line); }
+  .std-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.1rem; }
+  .std-card { position: relative; display: flex; flex-direction: column; gap: 0.4rem; padding: 1.4rem 1.4rem 1.5rem; background: var(--color-card); border: 1px solid var(--line); border-radius: var(--r-card); transition: transform var(--dur) var(--ease), border-color var(--dur); overflow: hidden; }
+  .std-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--color-primary); opacity: 0.8; }
+  .std-card:hover { transform: translateY(-3px); border-color: color-mix(in srgb, var(--color-primary) 40%, transparent); }
+  .std-n { font-family: var(--font-serif); font-size: 1.5rem; color: var(--color-primary); font-weight: 500; line-height: 1; }
+  .std-t { font-size: 1.05rem; font-weight: 800; color: var(--ink-strong); letter-spacing: -0.02em; }
+  .std-s { font-size: 0.88rem; color: var(--ink-mute); line-height: 1.55; }
+  .std-go { position: absolute; right: 1.2rem; bottom: 1.2rem; color: var(--color-primary); opacity: 0; transform: translateX(-4px); transition: all var(--dur) var(--ease); }
+  .std-card:hover .std-go { opacity: 1; transform: none; }
 
-  /* ---------- 가치 ---------- */
-  .values-sec { background: var(--bg-soft); border-block: 1px solid var(--line); }
-  .values-inner { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 5vw, 4rem); align-items: center; }
-  .values-copy .h2 { margin-top: 0.6rem; }
-  .values-copy .lead { margin-top: 1rem; margin-bottom: 1.4rem; }
-  .values-list { display: flex; flex-direction: column; gap: 0.9rem; }
-  .vrow { display: flex; gap: 1rem; align-items: center; padding: 1.1rem 1.3rem; background: var(--card); border: 1px solid var(--line); border-radius: var(--r-md); transition: transform var(--dur) var(--ease), border-color var(--dur); }
-  .vrow:hover { transform: translateX(5px); border-color: var(--line-strong); }
-  .vrow-ic { font-size: 1.5rem; flex: none; }
-  .vrow div { display: flex; flex-direction: column; }
-  .vrow b { color: var(--ink-strong); font-size: 1rem; }
-  .vrow span { color: var(--ink-mute); font-size: 0.86rem; margin-top: 1px; }
+  .good-sec { background: var(--bg-soft); border-block: 1px solid var(--line); }
 
-  /* ---------- 반응형 ---------- */
-  @media (max-width: 900px) {
-    .hero-inner { grid-template-columns: 1fr; }
-    .hero-figure { max-width: 26rem; order: -1; }
-    .feature-grid { grid-template-columns: 1fr 1fr; }
-    .feature-grid :global(.pc--feature) { grid-column: 1 / -1; } /* 대표 카드는 전폭 → 고립 카드 방지 */
-    .corners { grid-template-columns: 1fr 1fr; }
-    .values-inner { grid-template-columns: 1fr; }
+  /* CTA */
+  .cta-box { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; padding: 2rem 2.2rem; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--color-card); flex-wrap: wrap; box-shadow: var(--shadow-sm); }
+  .cta-text { color: var(--ink-soft); line-height: 1.7; }
+
+  @media (max-width: 980px) {
+    .feat-small { grid-template-columns: 1fr 1fr; }
+    .std-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 880px) {
+    .rec-grid, .proj-grid { grid-template-columns: 1fr 1fr; }
   }
   @media (max-width: 560px) {
-    .feature-grid, .corners { grid-template-columns: 1fr; }
-    .sec-head--row { flex-direction: column; align-items: flex-start; gap: 0.8rem; }
+    .rec-grid, .proj-grid, .feat-small, .std-grid { grid-template-columns: 1fr; }
   }
 </style>

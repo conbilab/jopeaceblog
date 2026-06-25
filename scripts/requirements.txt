@@ -1,0 +1,4 @@
+# 네이버 블로그 이전 도구(import_naver.py) 의존성
+requests>=2.31.0
+beautifulsoup4>=4.12.0
+markdownify>=0.13.1

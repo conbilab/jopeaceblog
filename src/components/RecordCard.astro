@@ -1,0 +1,74 @@
+---
+import type { Record_ } from '../lib/utils';
+import { formatDot } from '../lib/utils';
+import { getType } from '../lib/taxonomy';
+import Badge from './Badge.astro';
+
+interface Props { record: Record_; index?: number; compact?: boolean; }
+const { record, index = 0, compact = false } = Astro.props;
+const { data } = record;
+const href = `/records/${record.id}`;
+const type = getType(data.type);
+const showStatus = data.status !== 'completed';
+const style = `--tbg: var(${type.bg}); --tink: var(${type.ink});`;
+---
+
+<article class:list={['rec', 'reveal', { 'rec--compact': compact }]} data-delay={String((index % 4) + 1)} style={style}>
+  <a href={href} class="rec-link">
+    <div class="rec-visual">
+      {data.cover ? (
+        <img src={data.cover} alt={data.title} loading="lazy" decoding="async" />
+      ) : (
+        <div class="rec-block">
+          <span class="rb-emoji" aria-hidden="true">{type.emoji}</span>
+          <span class="rb-label">{type.label}</span>
+        </div>
+      )}
+      {data.cover && <span class="rec-cover-type">{type.emoji} {type.label}</span>}
+    </div>
+    <div class="rec-body">
+      <div class="rec-badges">
+        {data.cover && <Badge kind="type" value={data.type} />}
+        <Badge kind="topic" value={data.topic} />
+        {showStatus && <Badge kind="status" value={data.status} />}
+      </div>
+      <h3 class="rec-title">{data.title}</h3>
+      {data.description && <p class="rec-desc">{data.description}</p>}
+      <div class="rec-meta">
+        <time class="rec-date" datetime={data.date.toISOString()}>{formatDot(data.date)}</time>
+        {data.tags.length > 0 && (<span class="rec-tags">{data.tags.slice(0, 2).map((t) => `#${t}`).join(' ')}</span>)}
+      </div>
+    </div>
+  </a>
+</article>
+
+<style>
+  .rec { background: var(--color-card); border: 1px solid var(--line); border-radius: var(--r-card); overflow: hidden; box-shadow: var(--shadow-sm); transition: border-color var(--dur) var(--ease), transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease); }
+  .rec:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: var(--line-strong); }
+  .rec-link { display: flex; flex-direction: column; height: 100%; }
+
+  /* 비주얼(이미지 or 컬러블록) */
+  .rec-visual { position: relative; aspect-ratio: 16 / 9; overflow: hidden; }
+  .rec-visual img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s var(--ease); }
+  .rec:hover .rec-visual img { transform: scale(1.04); }
+  .rec-block { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end; gap: 0.2rem; padding: 1rem 1.2rem; background: linear-gradient(150deg, var(--tbg), color-mix(in srgb, var(--tbg) 55%, var(--color-bg))); position: relative; }
+  .rb-emoji { position: absolute; top: 0.4rem; right: 0.7rem; font-size: 3.2rem; opacity: 0.5; line-height: 1; transition: transform var(--dur) var(--ease); }
+  .rec:hover .rb-emoji { transform: rotate(-6deg) scale(1.06); }
+  .rb-label { font-size: 0.8rem; font-weight: 800; color: var(--tink); letter-spacing: 0.01em; position: relative; }
+  .rec-cover-type { position: absolute; left: 0.8rem; bottom: 0.8rem; font-size: 0.72rem; font-weight: 700; color: var(--tink); background: color-mix(in srgb, var(--color-bg) 86%, transparent); backdrop-filter: blur(6px); padding: 0.35em 0.65em; border-radius: 999px; }
+
+  .rec-body { display: flex; flex-direction: column; gap: 0.55rem; padding: 1.15rem 1.3rem 1.25rem; flex: 1; }
+  .rec-badges { display: flex; flex-wrap: wrap; gap: 0.45rem; align-items: center; }
+  .rec-title { font-size: 1.12rem; font-weight: 800; line-height: 1.4; letter-spacing: -0.025em; color: var(--ink-strong); text-wrap: balance; transition: color var(--dur-fast); }
+  .rec:hover .rec-title { color: var(--color-primary); }
+  .rec-desc { color: var(--ink-soft); font-size: 0.93rem; line-height: 1.62; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .rec-meta { margin-top: auto; padding-top: 0.5rem; display: flex; flex-wrap: wrap; gap: 0.7rem; align-items: baseline; font-size: 0.8rem; color: var(--ink-mute); }
+  .rec-date { font-variant-numeric: tabular-nums; }
+  .rec-tags { color: var(--color-primary-ink); font-weight: 600; }
+
+  /* compact: 작은 카드(비주얼 더 낮게) */
+  .rec--compact .rec-visual { aspect-ratio: 3 / 1.4; }
+  .rec--compact .rb-emoji { font-size: 2.2rem; }
+  .rec--compact .rec-title { font-size: 1.02rem; }
+  .rec--compact .rec-desc { -webkit-line-clamp: 2; font-size: 0.88rem; }
+</style>

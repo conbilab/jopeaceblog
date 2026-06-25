@@ -1,0 +1,42 @@
+---
+import type { Project } from '../lib/utils';
+import { PROJECT_STATUS, getTopic } from '../lib/taxonomy';
+
+interface Props { project: Project; index?: number; }
+const { project, index = 0 } = Astro.props;
+const { data } = project;
+const st = PROJECT_STATUS[data.status] ?? PROJECT_STATUS.active;
+const href = `/work/${project.id}`;
+---
+
+<article class="proj reveal" data-delay={String((index % 3) + 1)}>
+  <a href={href} class="proj-link">
+    <div class="proj-head">
+      <span class="proj-status" style={`--c:${st.color}`}>{st.label}</span>
+      <span class="proj-topic">{getTopic(data.topic)}</span>
+    </div>
+    <h3 class="proj-title">{data.title}</h3>
+    <p class="proj-one">{data.oneliner}</p>
+    <dl class="proj-meta">
+      {data.period && (<div><dt>기간</dt><dd>{data.period}</dd></div>)}
+      {data.role && (<div><dt>역할</dt><dd>{data.role}</dd></div>)}
+    </dl>
+  </a>
+</article>
+
+<style>
+  .proj { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-md); transition: border-color var(--dur), transform var(--dur) var(--ease); }
+  .proj:hover { border-color: var(--line-strong); transform: translateY(-2px); }
+  .proj-link { display: flex; flex-direction: column; gap: 0.55rem; padding: 1.4rem 1.5rem; height: 100%; }
+  .proj-head { display: flex; align-items: center; gap: 0.7rem; }
+  .proj-status { font-size: 0.72rem; font-weight: 800; color: var(--c); display: inline-flex; align-items: center; gap: 0.4em; }
+  .proj-status::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--c); }
+  .proj-topic { font-size: 0.74rem; color: var(--ink-mute); font-weight: 600; }
+  .proj-title { font-size: 1.18rem; font-weight: 800; letter-spacing: -0.025em; color: var(--ink-strong); line-height: 1.35; transition: color var(--dur-fast); }
+  .proj:hover .proj-title { color: var(--color-primary); }
+  .proj-one { color: var(--ink-soft); font-size: 0.94rem; line-height: 1.6; }
+  .proj-meta { margin-top: auto; padding-top: 0.6rem; display: flex; flex-wrap: wrap; gap: 0.4rem 1.4rem; border-top: 1px solid var(--line-soft); }
+  .proj-meta div { display: flex; gap: 0.5rem; align-items: baseline; }
+  .proj-meta dt { font-size: 0.72rem; color: var(--ink-mute); font-weight: 700; }
+  .proj-meta dd { font-size: 0.82rem; color: var(--ink-soft); }
+</style>

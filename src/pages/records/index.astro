@@ -1,0 +1,117 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import RecordCard from '../../components/RecordCard.astro';
+import { getPublishedRecords } from '../../lib/utils';
+import { TYPE_ORDER, TYPES, TOPIC_ORDER, TOPICS, STATUS_ORDER, STATUS } from '../../lib/taxonomy';
+
+const records = await getPublishedRecords();
+const typeCount = (k: string) => records.filter((r) => r.data.type === k).length;
+const topicCount = (k: string) => records.filter((r) => r.data.topic === k).length;
+const usedTopics = TOPIC_ORDER.filter((k) => topicCount(k) > 0);
+---
+
+<BaseLayout title="기록" description="피스노트의 모든 기록 — 생각·느낌·해본 것·일·맛과 장소·배움을 한곳에서.">
+  <header class="rec-head">
+    <div class="wrap">
+      <h1 class="page-title">기록</h1>
+      <p class="page-lead">매일의 생각과 행동을 정직하게 남깁니다. 유형·주제·상태로 골라보세요.</p>
+
+      <div class="filters">
+        <div class="frow">
+          <span class="frow-label">유형</span>
+          <div class="chips" data-group="type">
+            <button class="fchip is-active" data-val="all">전체 <span class="fc-n">{records.length}</span></button>
+            {TYPE_ORDER.map((k) => (
+              <button class="fchip" data-val={k} style={`--bg: var(${TYPES[k].bg}); --ink: var(${TYPES[k].ink});`}>{TYPES[k].emoji} {TYPES[k].label} <span class="fc-n">{typeCount(k)}</span></button>
+            ))}
+          </div>
+        </div>
+        <div class="frow">
+          <span class="frow-label">주제</span>
+          <div class="chips" data-group="topic">
+            <button class="fchip fchip--plain is-active" data-val="all">전체</button>
+            {usedTopics.map((k) => (<button class="fchip fchip--plain" data-val={k}>{TOPICS[k]}</button>))}
+          </div>
+        </div>
+        <div class="frow">
+          <span class="frow-label">상태</span>
+          <div class="chips" data-group="status">
+            <button class="fchip fchip--plain is-active" data-val="all">전체</button>
+            {STATUS_ORDER.map((k) => (<button class="fchip fchip--plain" data-val={k}>{STATUS[k].emoji} {STATUS[k].label}</button>))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="rec-body">
+    <div class="wrap">
+      <div class="rec-grid" id="rec-grid">
+        {records.map((r, i) => (
+          <div class="rec-item" data-type={r.data.type} data-topic={r.data.topic} data-status={r.data.status}>
+            <RecordCard record={r} index={i} />
+          </div>
+        ))}
+      </div>
+      <p class="rec-empty" id="rec-empty" hidden>조건에 맞는 기록이 아직 없어요. 🌱</p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .rec-head { padding-top: clamp(2rem, 4vw, 3rem); padding-bottom: 1.5rem; border-bottom: 1px solid var(--line); }
+  .page-title { font-size: var(--step-4); font-weight: 800; letter-spacing: -0.04em; color: var(--ink-strong); }
+  .page-lead { margin-top: 0.6rem; color: var(--ink-soft); font-size: 1.02rem; }
+  .filters { margin-top: 1.8rem; display: flex; flex-direction: column; gap: 0.9rem; }
+  .frow { display: grid; grid-template-columns: 3rem 1fr; gap: 0.8rem; align-items: start; }
+  .frow-label { font-size: 0.78rem; font-weight: 800; color: var(--ink-mute); padding-top: 0.5rem; }
+  .chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .fchip { font-size: 0.85rem; font-weight: 700; padding: 0.45em 0.8em; border-radius: var(--r-pill); border: 1px solid var(--line); background: var(--card); color: var(--ink-soft); transition: all var(--dur-fast) var(--ease); }
+  .fchip:hover { border-color: var(--line-strong); }
+  .fchip.is-active { background: var(--bg, var(--color-primary)); color: var(--ink, #fff); border-color: transparent; }
+  .fchip--plain.is-active { background: var(--color-primary); color: #fff; }
+  .fc-n { opacity: 0.6; font-size: 0.85em; margin-left: 0.15em; }
+
+  .rec-body { padding-top: 2rem; }
+  .rec-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.1rem; }
+  .rec-item.is-hidden { display: none; }
+  .rec-empty { text-align: center; color: var(--ink-mute); padding: 3rem; }
+
+  @media (max-width: 880px) { .rec-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 560px) { .rec-grid { grid-template-columns: 1fr; } .frow { grid-template-columns: 1fr; } .frow-label { padding-top: 0; } }
+</style>
+
+<script>
+  const groups = { type: 'all', topic: 'all', status: 'all' } as Record<string, string>;
+  const items = Array.from(document.querySelectorAll<HTMLElement>('.rec-item'));
+  const empty = document.getElementById('rec-empty');
+
+  function apply() {
+    let visible = 0;
+    for (const el of items) {
+      const ok = (['type', 'topic', 'status'] as const).every((g) => groups[g] === 'all' || el.dataset[g] === groups[g]);
+      el.classList.toggle('is-hidden', !ok);
+      if (ok) visible++;
+    }
+    if (empty) empty.hidden = visible > 0;
+  }
+
+  document.querySelectorAll<HTMLElement>('.chips').forEach((box) => {
+    const group = box.dataset.group!;
+    box.querySelectorAll<HTMLButtonElement>('.fchip').forEach((chip) => {
+      chip.addEventListener('click', () => {
+        box.querySelectorAll('.fchip').forEach((c) => c.classList.remove('is-active'));
+        chip.classList.add('is-active');
+        groups[group] = chip.dataset.val!;
+        apply();
+      });
+    });
+  });
+
+  // ?type= 쿼리로 진입
+  const q = new URLSearchParams(location.search).get('type');
+  if (q) {
+    const chip = document.querySelector<HTMLButtonElement>(`.chips[data-group="type"] .fchip[data-val="${q}"]`);
+    chip?.click();
+  }
+</script>

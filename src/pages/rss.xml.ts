@@ -1,21 +1,21 @@
 import rss from '@astrojs/rss';
 import type { APIContext } from 'astro';
-import { getPublishedPosts } from '../lib/utils';
-import { getCategory } from '../lib/categories';
+import { getPublishedRecords } from '../lib/utils';
+import { getType, getTopic } from '../lib/taxonomy';
 import { SITE } from '../lib/site';
 
 export async function GET(context: APIContext) {
-  const posts = await getPublishedPosts();
+  const records = await getPublishedRecords();
   return rss({
     title: SITE.title,
     description: SITE.description,
     site: context.site ?? SITE.url,
-    items: posts.map((p) => ({
-      title: p.data.title,
-      pubDate: p.data.pubDate,
-      description: p.data.summary ?? '',
-      link: `/posts/${p.id}/`,
-      categories: [getCategory(p.data.category).name, ...p.data.tags],
+    items: records.map((r) => ({
+      title: r.data.title,
+      pubDate: r.data.date,
+      description: r.data.description ?? '',
+      link: `/records/${r.id}/`,
+      categories: [getType(r.data.type).label, getTopic(r.data.topic), ...r.data.tags].filter(Boolean),
     })),
     customData: `<language>ko-kr</language>`,
     stylesheet: false,

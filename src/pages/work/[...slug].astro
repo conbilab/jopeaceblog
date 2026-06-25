@@ -1,0 +1,79 @@
+---
+import { render, getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import RecordCard from '../../components/RecordCard.astro';
+import { PROJECT_STATUS, getTopic } from '../../lib/taxonomy';
+import { getPublishedRecords } from '../../lib/utils';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map((project) => ({ params: { slug: project.id }, props: { project } }));
+}
+
+const { project } = Astro.props;
+const { data } = project;
+const { Content } = await render(project);
+const st = PROJECT_STATUS[data.status] ?? PROJECT_STATUS.active;
+const records = (await getPublishedRecords()).filter((r) => data.relatedRecords.includes(r.id));
+---
+
+<BaseLayout title={data.title} description={data.oneliner} type="article">
+  <article class="proj-detail">
+    <header class="pd-head">
+      <div class="wrap measure">
+        <a href="/work" class="back">← 일과 프로젝트</a>
+        <div class="pd-status" style={`--c:${st.color}`}><span class="dot"></span>{st.label} · {getTopic(data.topic)}</div>
+        <h1 class="pd-title">{data.title}</h1>
+        <p class="pd-one">{data.oneliner}</p>
+        <dl class="pd-meta">
+          {data.period && (<div><dt>기간</dt><dd>{data.period}</dd></div>)}
+          {data.role && (<div><dt>내 역할</dt><dd>{data.role}</dd></div>)}
+        </dl>
+      </div>
+    </header>
+
+    <div class="wrap measure pd-body">
+      {(data.problem || data.learned) && (
+        <div class="pd-qa">
+          {data.problem && (<div class="pd-block"><p class="pdb-label">무엇을 해결하려 했는가</p><p>{data.problem}</p></div>)}
+          {data.learned && (<div class="pd-block pd-block--learn"><p class="pdb-label">무엇을 배웠는가</p><p>{data.learned}</p></div>)}
+        </div>
+      )}
+      <div class="prose"><Content /></div>
+
+      {records.length > 0 && (
+        <section class="pd-rel">
+          <h2 class="rel-h">관련 기록</h2>
+          <div class="rel-grid">{records.map((r, i) => (<RecordCard record={r} index={i} />))}</div>
+        </section>
+      )}
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .pd-head { padding-top: clamp(1.5rem, 3vw, 2.5rem); padding-bottom: 1.4rem; }
+  .back { font-size: 0.85rem; color: var(--ink-mute); font-weight: 600; }
+  .back:hover { color: var(--color-primary); }
+  .pd-status { margin: 1rem 0 0.8rem; font-size: 0.8rem; font-weight: 800; color: var(--c); display: inline-flex; align-items: center; gap: 0.5em; }
+  .pd-status .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--c); }
+  .pd-title { font-size: var(--step-4); font-weight: 800; letter-spacing: -0.035em; line-height: 1.2; color: var(--ink-strong); }
+  .pd-one { margin-top: 0.9rem; font-size: 1.12rem; color: var(--ink-soft); line-height: 1.6; }
+  .pd-meta { margin-top: 1.2rem; display: flex; flex-wrap: wrap; gap: 0.5rem 2rem; padding-top: 1rem; border-top: 1px solid var(--line); }
+  .pd-meta div { display: flex; gap: 0.6rem; align-items: baseline; }
+  .pd-meta dt { font-size: 0.76rem; color: var(--ink-mute); font-weight: 700; }
+  .pd-meta dd { font-size: 0.9rem; color: var(--ink-soft); font-weight: 600; }
+
+  .pd-body { padding-top: 1.5rem; }
+  .pd-qa { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem; }
+  .pd-block { padding: 1.2rem 1.4rem; background: var(--bg-soft); border-radius: var(--r-md); }
+  .pd-block--learn { background: var(--color-primary-soft); }
+  .pdb-label { font-size: 0.76rem; font-weight: 800; color: var(--ink-mute); margin-bottom: 0.5rem; }
+  .pd-block--learn .pdb-label { color: var(--color-primary-deep); }
+  .pd-block p:not(.pdb-label) { font-size: 0.95rem; color: var(--ink-soft); line-height: 1.65; }
+
+  .pd-rel { margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--line); }
+  .rel-h { font-size: var(--step-2); font-weight: 800; margin-bottom: 1.2rem; color: var(--ink-strong); }
+  .rel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; }
+  @media (max-width: 640px) { .pd-qa, .rel-grid { grid-template-columns: 1fr; } }
+</style>

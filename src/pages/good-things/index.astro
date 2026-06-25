@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import RecordCard from '../../components/RecordCard.astro';
+import { getRecordsByType } from '../../lib/utils';
+
+const items = await getRecordsByType('food-place');
+---
+
+<BaseLayout title="좋았던 것들" description="맛있었던 음식, 좋았던 카페와 장소, 써보고 좋았던 것들. 맛과 장소를 통해 내가 무엇을 좋다고 느끼는 사람인지 남깁니다.">
+  <header class="gt-head">
+    <div class="wrap measure">
+      <h1 class="page-title">좋았던 것들</h1>
+      <p class="page-lead">
+        맛있었던 음식, 좋았던 카페와 장소, 써보고 좋았던 것들을 적습니다.
+        인스타 감성 맛집 페이지가 아니라, <strong>맛과 장소를 통해 제가 무엇을 좋다고 느끼는 사람인지</strong> 보이면 좋겠습니다.
+      </p>
+    </div>
+  </header>
+  <section class="gt-body">
+    <div class="wrap">
+      {items.length > 0 ? (
+        <div class="grid">{items.map((r, i) => (<RecordCard record={r} index={i} />))}</div>
+      ) : (
+        <p class="empty">아직 기록이 없어요. 곧 좋았던 것들을 적어둘게요. 🍞</p>
+      )}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .gt-head { padding-top: clamp(2rem, 4vw, 3rem); padding-bottom: 1.2rem; border-bottom: 1px solid var(--line); }
+  .page-title { font-size: var(--step-4); font-weight: 800; letter-spacing: -0.04em; color: var(--ink-strong); }
+  .page-lead { margin-top: 0.8rem; color: var(--ink-soft); font-size: 1.05rem; line-height: 1.7; max-width: 52ch; }
+  .page-lead strong { color: var(--ink-strong); }
+  .gt-body { padding-top: 2rem; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.1rem; }
+  .empty { padding: 3rem; text-align: center; color: var(--ink-mute); border: 1px dashed var(--dashed); border-radius: var(--r-md); }
+  @media (max-width: 880px) { .grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 560px) { .grid { grid-template-columns: 1fr; } }
+</style>

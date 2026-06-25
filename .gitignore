@@ -31,3 +31,6 @@ Thumbs.db
 # 미디어 서버 (우분투에서 생성되는 데이터 — 깃에 올리지 않음)
 server/minio-data/
 server/.env
+
+# 네이버 블로그 이전 — 검토용 초안 폴더(깃에 올리지 않음)
+naver-export/

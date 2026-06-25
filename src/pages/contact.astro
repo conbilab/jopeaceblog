@@ -1,82 +1,87 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Logo from '../components/Logo.astro';
-import { SITE, SOCIAL } from '../lib/site';
+import { SITE } from '../lib/site';
 
-const channels = [
-  { ic: '✉️', label: '이메일', value: SITE.email, href: `mailto:${SITE.email}`, note: '가장 확실한 연락 방법' },
-  { ic: '💬', label: '카카오톡 상담', value: '피스웍스 채널', href: '#', note: '문의·견적은 여기로 (링크 연결 예정)' },
-  { ic: '🎬', label: '유튜브', value: '배워서남주는조피디', href: '#', note: 'AI 영상·마케팅 이야기' },
-  { ic: '📷', label: '인스타그램', value: '@jopis', href: '#', note: '일상과 작업의 짧은 기록' },
-];
+const types = ['마케팅 상담', '콘텐츠 제작', 'AI 활용', '홈페이지 제작', '강의/커뮤니티', '기타'];
 ---
 
-<BaseLayout title="연락하기" description="명함을 보고 오셨나요? 조피스에게 닿는 모든 길을 한곳에 모았습니다.">
+<BaseLayout title="문의" description="함께 일하거나 이야기 나누고 싶은 일이 있다면 연락 주세요.">
   <section class="contact">
-    <div class="wrap">
-      <div class="ct-head">
-        <span class="ct-mark"><Logo size={52} stroke={2} /></span>
-        <span class="kicker">Say hello</span>
-        <h1 class="h1 display">명함을 보고 오셨나요?<br/>잘 오셨습니다.</h1>
-        <p class="lead ct-lead">
-          이 블로그를 다 둘러보셨다면, 이제 저에 대해 꽤 아실 거예요.
-          영상·강의·마케팅 구조에 대한 이야기, 또는 그냥 인사도 환영합니다. 무리하게 권하지 않으니 편하게 연락 주세요.
-        </p>
+    <div class="wrap measure">
+      <h1 class="page-title">문의</h1>
+      <div class="ct-intro">
+        <p>함께 일하거나 이야기 나누고 싶은 일이 있다면 연락 주세요.</p>
+        <p>마케팅, 콘텐츠 제작, AI 활용, 홈페이지 제작, 강의, 커뮤니티 운영과 관련된 일을 함께할 수 있습니다.</p>
+        <p class="muted">다만 과장해서 팔거나, 사람을 속이거나, 약한 사람에게 불리한 방식의 일은 하고 싶지 않습니다.</p>
       </div>
 
-      <div class="ct-grid">
-        {channels.map((c) => {
-          const isReal = c.href && c.href !== '#';
-          const ext = c.href.startsWith('http');
-          const Tag = isReal ? 'a' : 'div';
-          return (
-            <Tag
-              class:list={['ct-card', 'card', { 'is-soon': !isReal }]}
-              href={isReal ? c.href : undefined}
-              target={ext ? '_blank' : undefined}
-              rel={ext ? 'noopener noreferrer' : undefined}
-            >
-              <span class="ct-ic" aria-hidden="true">{c.ic}</span>
-              <span class="ct-label">{c.label}</span>
-              <span class="ct-value">{c.value}</span>
-              <span class="ct-note">{isReal ? c.note : `${c.note} · 연결 예정`}</span>
-            </Tag>
-          );
-        })}
-      </div>
-
-      <div class="ct-foot card card--dashed">
-        <div>
-          <p class="cf-h">함께 일하고 싶으시다면</p>
-          <p class="cf-d">현재 상황을 듣고 가장 합리적인 방식을 추천해드립니다. 맞지 않으면 솔직히 말씀드려요.</p>
+      <form class="ct-form" id="ct-form" data-email={SITE.email}>
+        <div class="row2">
+          <label class="field"><span>이름</span><input type="text" name="name" required autocomplete="name" /></label>
+          <label class="field"><span>이메일</span><input type="email" name="email" required autocomplete="email" /></label>
         </div>
-        <a href={`mailto:${SITE.email}?subject=피스웍스 문의`} class="btn btn-primary">메일로 문의하기 →</a>
-      </div>
+        <label class="field"><span>문의 유형</span>
+          <select name="kind">{types.map((t) => (<option value={t}>{t}</option>))}</select>
+        </label>
+        <label class="field"><span>문의 내용</span><textarea name="message" rows="6" required></textarea></label>
+        <button type="submit" class="btn btn-primary">메일로 보내기</button>
+        <p class="ct-hint">버튼을 누르면 메일 앱이 열립니다. 직접 <a href={`mailto:${SITE.email}`}>{SITE.email}</a> 로 보내셔도 됩니다.</p>
+      </form>
 
-      <p class="ct-biz">피스웍스 · 대표 조재빈 · 사업자등록 731-24-00997 · 대전</p>
+      <!-- 뉴스레터 (Phase 2에서 구글/카카오 로그인·발송 연동 예정) -->
+      <div class="newsletter card">
+        <div>
+          <p class="nl-title">📮 피스노트 뉴스레터</p>
+          <p class="nl-desc">매일 쓰는 “조피스 생각”을 메일로도 보내드릴 예정입니다. 곧 시작해요.</p>
+        </div>
+        <form class="nl-form" id="nl-form">
+          <input type="email" name="email" placeholder="이메일 주소" aria-label="뉴스레터 이메일" />
+          <button type="submit" class="btn btn-ghost">신청 (준비 중)</button>
+        </form>
+      </div>
     </div>
   </section>
 </BaseLayout>
 
 <style>
-  .contact { padding-top: clamp(2rem, 4vw, 3.5rem); }
-  .ct-head { max-width: 46rem; }
-  .ct-mark { color: var(--brand); display: inline-flex; margin-bottom: 1rem; }
-  .ct-head .h1 { margin-top: 0.6rem; }
-  .ct-lead { margin-top: 1.2rem; max-width: 44ch; }
-  .ct-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.2rem; margin-top: 2.5rem; }
-  .ct-card { display: flex; flex-direction: column; gap: 0.3rem; padding: 1.5rem 1.6rem; }
-  .ct-ic { font-size: 1.6rem; margin-bottom: 0.4rem; }
-  .ct-label { font-size: 0.8rem; color: var(--ink-mute); font-weight: 700; letter-spacing: 0.03em; }
-  .ct-value { font-size: var(--step-1); font-weight: 800; color: var(--ink-strong); }
-  .ct-card:hover .ct-value { color: var(--brand); }
-  .ct-note { font-size: 0.85rem; color: var(--ink-soft); margin-top: 0.2rem; }
-  .ct-card.is-soon { cursor: default; opacity: 0.78; }
-  .ct-card.is-soon:hover { transform: none; box-shadow: var(--shadow-sm); border-color: var(--line); }
-  .ct-card.is-soon:hover .ct-value { color: var(--ink-strong); }
-  .ct-foot { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; padding: 1.8rem 2rem; margin-top: 1.8rem; background: var(--bg-soft); flex-wrap: wrap; }
-  .cf-h { font-weight: 800; font-size: var(--step-1); color: var(--ink-strong); }
-  .cf-d { color: var(--ink-soft); margin-top: 0.3rem; max-width: 40ch; }
-  .ct-biz { margin-top: 2rem; font-size: 0.82rem; color: var(--ink-mute); text-align: center; }
-  @media (max-width: 600px) { .ct-grid { grid-template-columns: 1fr; } }
+  .contact { padding-top: clamp(2rem, 4vw, 3rem); }
+  .page-title { font-size: var(--step-4); font-weight: 800; letter-spacing: -0.04em; color: var(--ink-strong); }
+  .ct-intro { margin-top: 1.2rem; display: flex; flex-direction: column; gap: 0.6rem; font-size: 1.07rem; line-height: 1.8; color: var(--ink-soft); padding-bottom: 1.5rem; border-bottom: 1px solid var(--line); }
+  .ct-intro .muted { color: var(--ink-mute); font-size: 1rem; }
+
+  .ct-form { margin-top: 2rem; display: flex; flex-direction: column; gap: 1.1rem; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; }
+  .field { display: flex; flex-direction: column; gap: 0.4rem; }
+  .field span { font-size: 0.85rem; font-weight: 700; color: var(--ink-soft); }
+  .field input, .field select, .field textarea { font: inherit; font-size: 1rem; padding: 0.75rem 0.9rem; border: 1px solid var(--line-strong); border-radius: var(--r-sm); background: var(--card); color: var(--ink); transition: border-color var(--dur-fast), box-shadow var(--dur-fast); }
+  .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px var(--color-primary-soft); }
+  .field textarea { resize: vertical; }
+  .ct-form .btn { align-self: flex-start; }
+  .ct-hint { font-size: 0.85rem; color: var(--ink-mute); }
+  .ct-hint a { color: var(--color-primary); }
+
+  .newsletter { margin-top: 2.5rem; padding: 1.6rem 1.8rem; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--color-primary-soft); flex-wrap: wrap; }
+  .nl-title { font-weight: 800; color: var(--ink-strong); font-size: 1.05rem; }
+  .nl-desc { color: var(--ink-soft); font-size: 0.92rem; margin-top: 0.3rem; max-width: 40ch; }
+  .nl-form { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .nl-form input { font: inherit; padding: 0.6rem 0.85rem; border: 1px solid var(--line-strong); border-radius: var(--r-sm); background: var(--card); }
+
+  @media (max-width: 560px) { .row2 { grid-template-columns: 1fr; } }
 </style>
+
+<script>
+  const form = document.getElementById('ct-form') as HTMLFormElement | null;
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const email = form.dataset.email || '';
+    const f = new FormData(form);
+    const subject = `[피스노트 문의] ${f.get('kind')} — ${f.get('name')}`;
+    const body = `이름: ${f.get('name')}\n이메일: ${f.get('email')}\n문의 유형: ${f.get('kind')}\n\n${f.get('message')}`;
+    window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  });
+  const nl = document.getElementById('nl-form');
+  nl?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    alert('뉴스레터는 곧 시작합니다. 조금만 기다려 주세요. 🙏');
+  });
+</script>

@@ -1,29 +1,26 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Logo from '../components/Logo.astro';
 ---
 
 <BaseLayout title="페이지를 찾을 수 없어요" noIndex={true}>
   <section class="nf">
     <div class="wrap nf-inner">
-      <span class="nf-mark"><Logo size={64} stroke={1.8} /></span>
-      <p class="nf-code num">404</p>
-      <h1 class="h2 display">이 길은 아직 비어 있네요</h1>
-      <p class="lead nf-lead">찾으시는 기록이 옮겨졌거나, 아직 적지 않은 이야기일지도 몰라요. 괜찮아요, 다른 길로 안내해 드릴게요.</p>
+      <p class="nf-code">404</p>
+      <h1 class="nf-title">이 길은 아직 비어 있네요</h1>
+      <p class="nf-lead">찾으시는 기록이 옮겨졌거나, 아직 적지 않은 이야기일지도 몰라요.</p>
       <div class="nf-cta">
         <a href="/" class="btn btn-primary">홈으로</a>
-        <a href="/log" class="btn btn-ghost">전체 기록 보기</a>
-        <a href="/search" class="btn btn-ghost">검색하기</a>
+        <a href="/records" class="btn btn-ghost">전체 기록</a>
       </div>
     </div>
   </section>
 </BaseLayout>
 
 <style>
-  .nf { min-height: 64vh; display: grid; place-items: center; text-align: center; }
-  .nf-inner { max-width: 38rem; }
-  .nf-mark { color: var(--brand); display: inline-flex; opacity: 0.85; }
-  .nf-code { font-size: var(--step-5); font-weight: 500; color: var(--gold); line-height: 1; margin-block: 0.5rem; }
-  .nf-lead { margin-top: 1rem; margin-inline: auto; }
-  .nf-cta { display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: center; margin-top: 2rem; }
+  .nf { min-height: 60vh; display: grid; place-items: center; text-align: center; }
+  .nf-inner { max-width: 34rem; }
+  .nf-code { font-family: var(--font-serif); font-size: clamp(3rem, 8vw, 5rem); color: var(--color-primary); font-weight: 500; line-height: 1; }
+  .nf-title { font-size: var(--step-2); font-weight: 800; color: var(--ink-strong); margin-top: 0.5rem; letter-spacing: -0.03em; }
+  .nf-lead { margin-top: 1rem; color: var(--ink-soft); }
+  .nf-cta { display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: center; margin-top: 1.8rem; }
 </style>

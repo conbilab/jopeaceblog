@@ -1,0 +1,156 @@
+---
+import { render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import RecordCard from '../../components/RecordCard.astro';
+import Badge from '../../components/Badge.astro';
+import { SITE } from '../../lib/site';
+import { getType, getTopic, getStatus } from '../../lib/taxonomy';
+import { formatDate, readingTime, getRelatedRecords, getPublishedRecords, excerpt } from '../../lib/utils';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const records = await getPublishedRecords();
+  return records.map((record) => ({ params: { slug: record.id }, props: { record } }));
+}
+
+const { record } = Astro.props;
+const { data } = record;
+const { Content, headings } = await render(record);
+const type = getType(data.type);
+const mins = readingTime(record.body);
+const related = await getRelatedRecords(record, 3);
+const metaDesc = data.description ?? excerpt((record.body ?? '').replace(/[#>*`_\[\]()!-]/g, ' '), 150);
+
+// 관련 프로젝트
+const allProjects = await getCollection('projects');
+const relProjects = allProjects.filter((p) => data.relatedProjects.includes(p.id));
+
+const articleLd = {
+  '@context': 'https://schema.org', '@type': 'BlogPosting',
+  headline: data.title, description: metaDesc,
+  datePublished: data.date.toISOString(),
+  dateModified: (data.updated ?? data.date).toISOString(),
+  author: { '@type': 'Person', name: SITE.author, alternateName: SITE.authorHandle, url: SITE.url },
+  mainEntityOfPage: new URL(`/records/${record.id}`, Astro.site ?? SITE.url).toString(),
+  inLanguage: 'ko-KR',
+  ...(data.tags.length ? { keywords: data.tags.join(', ') } : {}),
+};
+const toc = headings.filter((h) => h.depth === 2);
+---
+
+<BaseLayout title={data.title} description={metaDesc} type="article" publishedTime={data.date} jsonLd={articleLd}>
+  <article class="post">
+    <header class="post-head">
+      <div class="wrap measure">
+        <a href="/records" class="back">← 기록</a>
+        <div class="post-badges">
+          <Badge kind="type" value={data.type} showEmoji />
+          <Badge kind="topic" value={data.topic} />
+          {data.status !== 'completed' && <Badge kind="status" value={data.status} />}
+        </div>
+        <h1 class="post-title">{data.title}</h1>
+        {data.description && <p class="post-desc">{data.description}</p>}
+        <div class="post-meta">
+          <time datetime={data.date.toISOString()}>{formatDate(data.date)}</time>
+          <span aria-hidden="true">·</span>
+          <span>약 {mins}분</span>
+          {data.updated && (<><span aria-hidden="true">·</span><span>수정 {formatDate(data.updated)}</span></>)}
+        </div>
+      </div>
+    </header>
+
+    <div class="wrap post-wrap">
+      <div class="post-grid">
+        {toc.length >= 3 && (
+          <aside class="post-toc" aria-label="목차">
+            <p class="toc-h">목차</p>
+            <nav>{toc.map((h) => (<a href={`#${h.slug}`}>{h.text}</a>))}</nav>
+          </aside>
+        )}
+        <div class="post-main">
+          <div class="prose"><Content /></div>
+
+          {data.tags.length > 0 && (
+            <div class="post-tags">{data.tags.map((t) => (<span class="tag">{t}</span>))}</div>
+          )}
+
+          <!-- 글 하단 블록 -->
+          {data.question && (
+            <div class="after-block">
+              <p class="ab-label">이 기록에서 남은 질문</p>
+              <p class="ab-q">{data.question}</p>
+            </div>
+          )}
+
+          {relProjects.length > 0 && (
+            <div class="rel-proj">
+              <p class="rel-label">관련 프로젝트</p>
+              <ul role="list">{relProjects.map((p) => (<li><a href={`/work/${p.id}`}>{p.data.title} →</a></li>))}</ul>
+            </div>
+          )}
+
+          <div class="sign">
+            <p>— {SITE.authorHandle}</p>
+            <a href="/about" class="sign-link">조피스는 누구인가 →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {related.length > 0 && (
+      <section class="related section-sm">
+        <div class="wrap">
+          <h2 class="rel-h">관련 기록</h2>
+          <div class="rel-grid">{related.map((r, i) => (<RecordCard record={r} index={i} />))}</div>
+        </div>
+      </section>
+    )}
+  </article>
+</BaseLayout>
+
+<style>
+  .post-head { padding-top: clamp(1.5rem, 3vw, 2.5rem); padding-bottom: 1.4rem; }
+  .back { font-size: 0.85rem; color: var(--ink-mute); font-weight: 600; }
+  .back:hover { color: var(--color-primary); }
+  .post-badges { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; margin: 1.1rem 0 1rem; }
+  .post-title { font-size: var(--step-4); font-weight: 800; letter-spacing: -0.035em; line-height: 1.2; color: var(--ink-strong); text-wrap: balance; }
+  .post-desc { margin-top: 0.9rem; font-size: 1.12rem; color: var(--ink-soft); line-height: 1.6; }
+  .post-meta { margin-top: 1rem; display: flex; flex-wrap: wrap; gap: 0.5em; align-items: center; font-size: 0.88rem; color: var(--ink-mute); font-variant-numeric: tabular-nums; }
+  .post-meta span[aria-hidden] { opacity: 0.5; }
+
+  .post-wrap { padding-top: 0.5rem; }
+  .post-grid { display: grid; grid-template-columns: 1fr; justify-items: center; }
+  .post-main { width: 100%; max-width: var(--measure); }
+  .post-toc { display: none; }
+  @media (min-width: 1080px) {
+    .post-grid { grid-template-columns: 1fr minmax(0, var(--measure)) 1fr; align-items: start; }
+    .post-main { grid-column: 2; }
+    .post-toc { display: block; grid-column: 3; position: sticky; top: 5.5rem; padding-left: 2rem; max-width: 15rem; }
+    .toc-h { font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--ink-mute); font-weight: 800; margin-bottom: 0.8rem; }
+    .post-toc nav { display: flex; flex-direction: column; gap: 0.55rem; border-left: 2px solid var(--line); padding-left: 1rem; }
+    .post-toc a { font-size: 0.84rem; color: var(--ink-mute); line-height: 1.4; }
+    .post-toc a:hover { color: var(--color-primary); }
+  }
+
+  .post-tags { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-top: 2.2rem; padding-top: 1.3rem; border-top: 1px solid var(--line); }
+  .tag { font-size: 0.82rem; color: var(--color-primary-ink); font-weight: 600; }
+  .tag::before { content: '#'; opacity: 0.6; }
+
+  .after-block { margin-top: 2rem; padding: 1.4rem 1.6rem; background: var(--color-primary-soft); border-radius: var(--r-md); }
+  .ab-label { font-size: 0.78rem; font-weight: 800; color: var(--color-primary-deep); letter-spacing: 0.02em; }
+  .ab-q { margin-top: 0.5rem; font-size: 1.05rem; color: var(--ink-strong); line-height: 1.6; }
+
+  .rel-proj { margin-top: 1.8rem; }
+  .rel-label { font-size: 0.78rem; font-weight: 800; color: var(--ink-mute); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.7rem; }
+  .rel-proj ul { display: flex; flex-direction: column; gap: 0.5rem; }
+  .rel-proj a { color: var(--color-primary); font-weight: 700; }
+
+  .sign { margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--line); display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; flex-wrap: wrap; }
+  .sign p { font-family: var(--font-serif); font-style: italic; color: var(--ink-soft); }
+  .sign-link { font-size: 0.88rem; color: var(--color-primary); font-weight: 700; }
+
+  .related { background: var(--bg-soft); border-top: 1px solid var(--line); margin-top: 3rem; }
+  .rel-h { font-size: var(--step-2); font-weight: 800; letter-spacing: -0.03em; margin-bottom: 1.4rem; color: var(--ink-strong); }
+  .rel-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.1rem; }
+  @media (max-width: 760px) { .rel-grid { grid-template-columns: 1fr; } }
+</style>

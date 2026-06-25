@@ -1,0 +1,73 @@
+---
+import { render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getStandards } from '../../lib/utils';
+
+const standards = await getStandards();
+const rendered = await Promise.all(standards.map((s) => render(s)));
+---
+
+<BaseLayout title="나의 기준" description="조피스가 일하고 살아가며 지키고 싶은 기준. 완벽하다는 뜻이 아니라, 계속 이 방향으로 돌아오기 위한 기준입니다.">
+  <header class="std-head">
+    <div class="wrap measure">
+      <h1 class="page-title">내가 일하고 살아가는 기준</h1>
+      <div class="std-intro">
+        <p>저는 좋은 사람이 되고 싶습니다.</p>
+        <p>선하게 살고 싶고, 거짓말하지 않고 일하고 싶고, 약한 사람을 함부로 대하지 않는 사람이 되고 싶습니다.</p>
+        <p>돈을 벌고 싶습니다. 하지만 아무렇게나 벌고 싶지는 않습니다.</p>
+        <p class="muted">이 페이지는 제가 일하고 살아가며 지키고 싶은 기준을 정리한 곳입니다. 완벽하다는 뜻이 아니라, 계속 이 방향으로 돌아오기 위한 기준입니다.</p>
+      </div>
+    </div>
+  </header>
+
+  <section class="std-body">
+    <div class="wrap measure">
+      {standards.map((s, i) => {
+        const { Content } = rendered[i];
+        return (
+          <article class="std-card" id={s.id}>
+            <div class="sc-head">
+              <span class="sc-n">{String(s.data.order).padStart(2, '0')}</span>
+              <h2 class="sc-title">{s.data.title}</h2>
+            </div>
+            <p class="sc-summary">{s.data.summary}</p>
+            <div class="prose sc-prose"><Content /></div>
+            <div class="sc-grid">
+              {s.data.careful && (<div class="sc-block sc-block--careful"><p class="scb-label">조심하려는 것</p><p>{s.data.careful}</p></div>)}
+              {s.data.action && (<div class="sc-block sc-block--action"><p class="scb-label">이렇게 행동하려는 것</p><p>{s.data.action}</p></div>)}
+            </div>
+          </article>
+        );
+      })}
+      <p class="std-foot">이 기준들은 고정된 게 아니라, 살면서 계속 고쳐 쓰는 것입니다. 🕊️</p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .std-head { padding-top: clamp(2rem, 4vw, 3rem); padding-bottom: 1rem; }
+  .page-title { font-size: var(--step-4); font-weight: 800; letter-spacing: -0.04em; line-height: 1.2; color: var(--ink-strong); }
+  .std-intro { margin-top: 1.5rem; display: flex; flex-direction: column; gap: 0.7rem; font-size: 1.08rem; line-height: 1.8; color: var(--ink-soft); }
+  .std-intro .muted { margin-top: 0.5rem; color: var(--ink-mute); font-size: 1rem; }
+
+  .std-body { padding-top: 1.5rem; }
+  .std-card { padding-block: 2.2rem; border-top: 1px solid var(--line); scroll-margin-top: 5.5rem; }
+  .sc-head { display: flex; align-items: baseline; gap: 1rem; }
+  .sc-n { font-family: var(--font-serif); font-size: 1.8rem; color: var(--color-primary); font-weight: 500; line-height: 1; }
+  .sc-title { font-size: var(--step-2); font-weight: 800; letter-spacing: -0.03em; color: var(--ink-strong); }
+  .sc-summary { margin-top: 0.7rem; font-size: 1.12rem; color: var(--color-primary-ink); font-weight: 600; line-height: 1.5; }
+  .sc-prose { margin-top: 1.1rem; }
+  .sc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.6rem; }
+  .sc-block { padding: 1.1rem 1.3rem; border-radius: var(--r-md); }
+  .sc-block--careful { background: #f6ece0; }
+  .sc-block--action { background: var(--t-action-bg); }
+  :root[data-theme='dark'] .sc-block--careful { background: #2c2418; }
+  .scb-label { font-size: 0.74rem; font-weight: 800; letter-spacing: 0.04em; margin-bottom: 0.4rem; }
+  .sc-block--careful .scb-label { color: var(--color-warning); }
+  .sc-block--action .scb-label { color: var(--color-green); }
+  .sc-block p:not(.scb-label) { font-size: 0.92rem; color: var(--ink-soft); line-height: 1.6; }
+
+  .std-foot { margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--line); font-family: var(--font-serif); font-style: italic; color: var(--ink-mute); }
+
+  @media (max-width: 600px) { .sc-grid { grid-template-columns: 1fr; } }
+</style>
