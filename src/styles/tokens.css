@@ -1,0 +1,196 @@
+/* ============================================================
+   디자인 토큰 — 조피스의 기록
+   팔레트: 크림 우세(60) · 딥그린 구조(30) · 골드 액센트(10) + 테라코타/세이지 온기
+   라이트/다크 모두 CSS 변수로 한 곳에서 관리. data-theme 또는 prefers-color-scheme.
+   ============================================================ */
+
+:root {
+  /* ---- 브랜드 원색(모드 무관 고정 레퍼런스) ---- */
+  --c-cream: #fbfaf7;
+  --c-cream-2: #f3f1ea;
+  --c-green: #0f4536;
+  --c-green-d: #0a3328;
+  --c-green-m: #1c6b54;
+  --c-green-l: #2e8568;
+  --c-gold: #a9772f;
+  --c-gold-l: #c79a52;
+  --c-terra: #c45e3a;
+  --c-sage: #9caf88;
+
+  /* ---- 타이포 패밀리 ---- */
+  --font-sans: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo',
+    'Noto Sans KR', system-ui, sans-serif;
+  --font-serif: 'Fraunces', 'Pretendard', Georgia, 'Times New Roman', serif;
+
+  /* ---- 유체 타입 스케일 (1.25 ratio, clamp: 모바일~데스크톱) ---- */
+  --step--2: clamp(0.7rem, 0.67rem + 0.15vw, 0.78rem);
+  --step--1: clamp(0.82rem, 0.79rem + 0.18vw, 0.92rem);
+  --step-0: clamp(1.0625rem, 1.04rem + 0.15vw, 1.125rem); /* 본문 17~18px */
+  --step-1: clamp(1.27rem, 1.2rem + 0.4vw, 1.5rem);
+  --step-2: clamp(1.52rem, 1.4rem + 0.7vw, 2rem);
+  --step-3: clamp(1.83rem, 1.6rem + 1.2vw, 2.66rem);
+  --step-4: clamp(2.2rem, 1.8rem + 2vw, 3.55rem);
+  --step-5: clamp(2.64rem, 2rem + 3.2vw, 4.74rem);
+  --step-6: clamp(3.15rem, 2.2rem + 4.8vw, 6.3rem);
+
+  /* ---- 한글 본문 가독성 토큰 ---- */
+  --leading-body: 1.7;     /* 행간 165~170% */
+  --leading-tight: 1.22;   /* 제목 */
+  --leading-snug: 1.4;
+  --tracking-body: -0.02em;
+  --tracking-tight: -0.035em;
+  --tracking-wide: 0.12em; /* 키커/스몰캡스 */
+
+  /* ---- 레이아웃 폭 ---- */
+  --measure: 40rem;        /* 본문 줄폭 ≈ 한글 38~40자 (WCAG CJK 권고) */
+  --container: 72rem;      /* 1152px 와이드 */
+  --container-wide: 80rem;
+  --gutter: clamp(1.1rem, 0.6rem + 2.5vw, 2rem);
+
+  /* ---- 스페이싱 스케일 ---- */
+  --space-2xs: 0.375rem;
+  --space-xs: 0.625rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2.5rem;
+  --space-xl: 4rem;
+  --space-2xl: 6rem;
+  --space-3xl: clamp(4.5rem, 3rem + 7vw, 9rem);
+
+  /* ---- 반경 ---- */
+  --r-xs: 6px;
+  --r-sm: 10px;
+  --r-md: 16px;
+  --r-lg: 22px;
+  --r-xl: 30px;
+  --r-pill: 999px;
+
+  /* ---- 모션 ---- */
+  --ease: cubic-bezier(0.2, 0.7, 0.3, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-fast: 0.18s;
+  --dur: 0.32s;
+  --dur-slow: 0.7s;
+
+  /* ---- z-index ---- */
+  --z-nav: 60;
+  --z-overlay: 80;
+  --z-top: 100;
+}
+
+/* =================== LIGHT (기본) =================== */
+:root,
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --bg: #fbfaf7;
+  --bg-soft: #f3f1ea;
+  --bg-sunk: #ece8dd;
+  --card: #ffffff;
+  --card-2: #fcfbf8;
+
+  --ink: #21302a;        /* 본문 — 따뜻한 그린차콜 */
+  --ink-strong: #0f2c23; /* 제목 */
+  --ink-soft: #46544c;
+  --ink-mute: #5f6b63;   /* 메타/날짜 — WCAG AA(4.5:1+) 확보 위해 어둡게 */
+  --ink-faint: #828c84;  /* 보조 라벨 — 텍스트로 쓰여도 AA 근접 */
+
+  --brand: #0f4536;
+  --brand-mid: #1c6b54;
+  --brand-light: #2e8568;
+  --gold: #a9772f;
+  --gold-ink: #8a611f;   /* 크림 위 골드 텍스트(대비 확보) */
+  --terra: #c45e3a;
+  --terra-ink: #a8492a;
+  --sage: #6f8a57;
+
+  --line: #e6e2d7;
+  --line-soft: #efebe1;
+  --line-strong: #d8d2c4;
+  --dashed: #cfc8b6;     /* 시그니처 점선 */
+
+  --link: #8a611f;
+  --link-hover: #0f4536;
+  --selection: rgba(28, 107, 84, 0.18);
+
+  --shadow-sm: 0 1px 2px rgba(20, 38, 30, 0.05), 0 2px 8px rgba(20, 38, 30, 0.04);
+  --shadow-md: 0 8px 28px rgba(20, 38, 30, 0.09), 0 2px 8px rgba(20, 38, 30, 0.05);
+  --shadow-lg: 0 24px 60px rgba(15, 69, 54, 0.14);
+
+  --grain-opacity: 0.035;
+
+  /* 카테고리 액센트 (코너별 색) — 텍스트로도 쓰이므로 라이트 모드는 본문 AA(4.5:1+) 통과하게 어둡게 */
+  --cat-work: #166050;     --cat-work-bg: #e7f0eb;
+  --cat-thought: #8a611f;  --cat-thought-bg: #f3ebda;
+  --cat-daily: #58723f;    --cat-daily-bg: #ebf0e3;
+  --cat-food: #a8492a;     --cat-food-bg: #f6e7df;
+  --cat-travel: #356b68;   --cat-travel-bg: #e2efee;
+  --cat-win: #82591f;      --cat-win-bg: #f1e8d8;
+}
+
+/* =================== DARK =================== */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --bg: #0d1814;         /* 딥그린 차콜 (순흑 아님) */
+  --bg-soft: #11201a;
+  --bg-sunk: #0a1410;
+  --card: #16261f;
+  --card-2: #142219;
+
+  --ink: #e7e6db;        /* 따뜻한 오프화이트 */
+  --ink-strong: #f4f2e9;
+  --ink-soft: #bcc4ba;
+  --ink-mute: #99a39a;
+  --ink-faint: #7c887e;  /* 다크 보조 텍스트 — AA 근접(4.8:1) */
+
+  --brand: #4fae8e;
+  --brand-mid: #5fae90;
+  --brand-light: #7cc7a8;
+  --gold: #d4a574;
+  --gold-ink: #e0b888;
+  --terra: #df7e54;
+  --terra-ink: #e89570;
+  --sage: #a6bd8c;
+
+  --line: #2a3a32;
+  --line-soft: #213029;
+  --line-strong: #36493f;
+  --dashed: #3a4d43;
+
+  --link: #d4a574;
+  --link-hover: #7cc7a8;
+  --selection: rgba(79, 174, 142, 0.26);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 26px 64px rgba(0, 0, 0, 0.55);
+
+  --grain-opacity: 0.05;
+
+  --cat-work: #6cc0a2;     --cat-work-bg: #153026;
+  --cat-thought: #d4a574;  --cat-thought-bg: #2a2517;
+  --cat-daily: #a6bd8c;    --cat-daily-bg: #1d2818;
+  --cat-food: #df7e54;     --cat-food-bg: #2c1d15;
+  --cat-travel: #6bb6b1;   --cat-travel-bg: #142a28;
+  --cat-win: #d9b06f;      --cat-win-bg: #29220f;
+}
+
+/* prefers-color-scheme: 사용자가 토글 안 했을 때 시스템 따름 */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+    --bg: #0d1814; --bg-soft: #11201a; --bg-sunk: #0a1410; --card: #16261f; --card-2: #142219;
+    --ink: #e7e6db; --ink-strong: #f4f2e9; --ink-soft: #bcc4ba; --ink-mute: #8b958c; --ink-faint: #6b756d;
+    --brand: #4fae8e; --brand-mid: #5fae90; --brand-light: #7cc7a8;
+    --gold: #d4a574; --gold-ink: #e0b888; --terra: #df7e54; --terra-ink: #e89570; --sage: #a6bd8c;
+    --line: #2a3a32; --line-soft: #213029; --line-strong: #36493f; --dashed: #3a4d43;
+    --link: #d4a574; --link-hover: #7cc7a8; --selection: rgba(79, 174, 142, 0.26);
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.3),0 2px 8px rgba(0,0,0,.2);
+    --shadow-md: 0 10px 30px rgba(0,0,0,.4); --shadow-lg: 0 26px 64px rgba(0,0,0,.55);
+    --grain-opacity: 0.05;
+    --cat-work: #6cc0a2; --cat-work-bg: #153026; --cat-thought: #d4a574; --cat-thought-bg: #2a2517;
+    --cat-daily: #a6bd8c; --cat-daily-bg: #1d2818; --cat-food: #df7e54; --cat-food-bg: #2c1d15;
+    --cat-travel: #6bb6b1; --cat-travel-bg: #142a28; --cat-win: #d9b06f; --cat-win-bg: #29220f;
+  }
+}

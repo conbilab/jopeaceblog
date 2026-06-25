@@ -1,0 +1,21 @@
+{
+  "name": "jopis-blog",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "description": "조피스(조재빈) 퍼스널 브랜딩 블로그 — 일상·작업·생각·맛집·여행의 기록",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^7.0.0",
+    "@astrojs/rss": "^4.0.18",
+    "@astrojs/sitemap": "^3.7.3",
+    "astro": "^7.0.2",
+    "sharp": "^0.35.2"
+  }
+}

@@ -1,0 +1,81 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="검색" description="조피스의 기록 전체에서 검색하기.">
+  <section class="search">
+    <div class="wrap measure">
+      <span class="kicker kicker--caps">Search</span>
+      <h1 class="h1 display">무엇을 찾고 계신가요?</h1>
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input type="search" id="q" placeholder="제목, 내용, 태그로 검색…" autocomplete="off" aria-label="검색어" autofocus />
+      </div>
+      <p class="search-hint" id="hint">예: 대전, AI영상, 강의, 평화, 맛집…</p>
+      <ul class="search-results" id="results" role="list"></ul>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .search { padding-top: clamp(2rem, 4vw, 3.5rem); min-height: 60vh; }
+  .search .h1 { margin-top: 0.5rem; margin-bottom: 1.5rem; }
+  .search-box { display: flex; align-items: center; gap: 0.8rem; padding: 0.9rem 1.3rem; background: var(--card); border: 1.5px solid var(--line-strong); border-radius: var(--r-pill); transition: border-color var(--dur), box-shadow var(--dur); color: var(--ink-mute); }
+  .search-box:focus-within { border-color: var(--brand-mid); box-shadow: 0 0 0 4px color-mix(in srgb, var(--brand) 12%, transparent); }
+  .search-box input { flex: 1; border: none; background: none; outline: none; font-size: var(--step-1); color: var(--ink); }
+  .search-hint { margin-top: 1rem; color: var(--ink-mute); font-size: 0.9rem; }
+  .search-results { margin-top: 1.8rem; display: flex; flex-direction: column; }
+  .sr-row { padding: 1.2rem 0.4rem; border-bottom: 1px dashed var(--dashed); }
+  .sr-row a { display: block; }
+  .sr-top { display: flex; align-items: center; gap: 0.5rem; font-size: 0.78rem; color: var(--ink-mute); margin-bottom: 0.3rem; }
+  .sr-title { font-size: var(--step-1); font-weight: 700; color: var(--ink-strong); letter-spacing: -0.02em; }
+  .sr-row a:hover .sr-title { color: var(--brand); }
+  .sr-sum { color: var(--ink-soft); font-size: 0.92rem; margin-top: 0.25rem; line-height: 1.5; }
+  .sr-row mark { background: color-mix(in srgb, var(--gold) 30%, transparent); color: inherit; border-radius: 3px; padding: 0 1px; }
+  .sr-none { padding: 2rem 0; color: var(--ink-mute); }
+</style>
+
+<script>
+  type Item = { title: string; url: string; summary: string; category: string; emoji: string; tags: string[]; date: string; body: string };
+  const input = document.getElementById('q') as HTMLInputElement;
+  const results = document.getElementById('results')!;
+  const hint = document.getElementById('hint')!;
+  let data: Item[] = [];
+
+  fetch('/search-index.json').then((r) => r.json()).then((d) => { data = d; const q = new URLSearchParams(location.search).get('q'); if (q) { input.value = q; run(q); } });
+
+  function esc(s: string) { return s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!)); }
+  function hl(text: string, q: string) {
+    if (!q) return esc(text);
+    const i = text.toLowerCase().indexOf(q.toLowerCase());
+    if (i < 0) return esc(text);
+    return esc(text.slice(0, i)) + '<mark>' + esc(text.slice(i, i + q.length)) + '</mark>' + esc(text.slice(i + q.length));
+  }
+
+  function run(q: string) {
+    q = q.trim();
+    hint.hidden = q.length > 0;
+    if (!q) { results.innerHTML = ''; return; }
+    const ql = q.toLowerCase();
+    const hits = data.filter((d) =>
+      d.title.toLowerCase().includes(ql) ||
+      d.summary.toLowerCase().includes(ql) ||
+      d.body.toLowerCase().includes(ql) ||
+      d.tags.some((t) => t.toLowerCase().includes(ql)) ||
+      d.category.toLowerCase().includes(ql)
+    );
+    if (hits.length === 0) {
+      results.innerHTML = `<li class="sr-none">‘${esc(q)}’에 대한 기록이 아직 없어요. 다른 말로 찾아보실래요?</li>`;
+      return;
+    }
+    results.innerHTML = hits.map((d) => `
+      <li class="sr-row"><a href="${esc(d.url)}">
+        <div class="sr-top"><span>${esc(d.emoji)} ${esc(d.category)}</span><span aria-hidden="true">·</span><span>${esc(d.date)}</span></div>
+        <div class="sr-title">${hl(d.title, q)}</div>
+        <div class="sr-sum">${hl(d.summary || d.body, q)}</div>
+      </a></li>`).join('');
+  }
+
+  let t: number;
+  input.addEventListener('input', () => { clearTimeout(t); t = window.setTimeout(() => run(input.value), 120); });
+</script>

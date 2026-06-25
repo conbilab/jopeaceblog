@@ -1,0 +1,122 @@
+# ============================================================
+#  Sveltia CMS 설정 (Decap CMS 호환)
+#  - 사이트주소.com/admin 에서 GitHub 로그인 → 글 작성/수정 → 저장하면 GitHub에 커밋 → Vercel 자동 배포
+#  - 아래 repo 를 본인 GitHub 저장소로 바꾸고, GitHub OAuth 한 번만 연결하면 됩니다. (README 참고)
+# ============================================================
+
+backend:
+  name: github
+  repo: jopis/jopis-blog        # ← 본인 GitHub "사용자명/저장소명" 으로 변경
+  branch: main
+  # Sveltia는 자체 OAuth 클라이언트를 내장하므로 Vercel에 별도 OAuth 서버가 필요 없습니다.
+  # (필요 시 base_url 로 직접 만든 OAuth 프록시를 지정할 수 있음)
+
+# 초안 → 검토 → 발행 워크플로우 (저장해도 바로 공개되지 않고 초안으로 보관 가능)
+publish_mode: editorial_workflow
+
+# 이미지 업로드 위치
+media_folder: "public/uploads"
+public_folder: "/uploads"
+
+locale: ko
+
+# 한국어 UI 라벨
+i18n:
+  structure: single_file
+  locales: [ko]
+  default_locale: ko
+
+collections:
+  # ───────────────── 글(기록) ─────────────────
+  - name: posts
+    label: "기록 (글)"
+    label_singular: "글"
+    description: "일상·작업·생각·맛집·여행·성취 — 모든 기록을 여기서 씁니다."
+    folder: "src/content/posts"
+    create: true
+    slug: "{{slug}}"
+    extension: md
+    format: frontmatter
+    sortable_fields: [pubDate, title, category]
+    view_filters:
+      - { label: "작업", field: category, pattern: work }
+      - { label: "생각", field: category, pattern: thought }
+      - { label: "일상", field: category, pattern: daily }
+      - { label: "맛집", field: category, pattern: food }
+      - { label: "여행", field: category, pattern: travel }
+      - { label: "성취", field: category, pattern: win }
+    fields:
+      - { name: title, label: "제목", widget: string }
+      - { name: pubDate, label: "발행일", widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD" }
+      - { name: updatedDate, label: "수정일(선택)", widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: false }
+      - name: category
+        label: "코너(카테고리)"
+        widget: select
+        default: daily
+        options:
+          - { label: "🎬 만드는 시간 (작업)", value: work }
+          - { label: "💭 문득 (생각)", value: thought }
+          - { label: "🌿 오늘의 결 (일상)", value: daily }
+          - { label: "🍜 맛의 기록 (맛집)", value: food }
+          - { label: "🧭 바람 따라 (여행)", value: travel }
+          - { label: "🏔️ 발자국 (성취)", value: win }
+      - { name: summary, label: "한 줄 요약", widget: string, required: false, hint: "카드에 보이는 짧은 소개" }
+      - { name: tags, label: "태그", widget: list, required: false, hint: "예: 대전, AI영상, 강의후기" }
+      - { name: cover, label: "대표 이미지", widget: image, required: false, choose_url: false }
+      - { name: coverAlt, label: "이미지 설명(접근성)", widget: string, required: false }
+      - name: growth
+        label: "완성도"
+        widget: select
+        default: evergreen
+        options:
+          - { label: "🌳 완성", value: evergreen }
+          - { label: "🌿 정리 중", value: budding }
+          - { label: "🌱 단상(가볍게)", value: seedling }
+      - { name: featured, label: "대표 글로 고정(홈 상단)", widget: boolean, default: false, required: false }
+      - { name: pinned, label: "최상단 고정", widget: boolean, default: false, required: false }
+      - { name: draft, label: "비공개 초안", widget: boolean, default: false, required: false }
+      # ── 맛집 전용 (작성 시 선택) ──
+      - { name: place, label: "🍜 장소명", widget: string, required: false }
+      - { name: location, label: "🍜 위치(구/동)", widget: string, required: false }
+      - { name: rating, label: "🍜 평점(0~5)", widget: number, required: false, value_type: float, min: 0, max: 5, step: 0.5 }
+      - { name: priceRange, label: "🍜 가격대", widget: string, required: false }
+      - { name: recommend, label: "🍜 추천 포인트", widget: string, required: false }
+      # ── 여행 전용 (작성 시 선택) ──
+      - { name: region, label: "🧭 지역", widget: string, required: false }
+      - { name: companions, label: "🧭 동행", widget: string, required: false }
+      - { name: course, label: "🧭 코스(장소들)", widget: list, required: false }
+      # ── 작업 전용 (작성 시 선택) ──
+      - { name: client, label: "🎬 클라이언트", widget: string, required: false }
+      - { name: role, label: "🎬 역할", widget: string, required: false }
+      - { name: result, label: "🎬 결과(지표)", widget: string, required: false }
+      - { name: videoUrl, label: "🎬 영상 링크", widget: string, required: false }
+      # ── 본문 ──
+      - { name: body, label: "본문", widget: markdown }
+
+  # ───────────────── 이력(연대기) ─────────────────
+  - name: timeline
+    label: "이력 (연대기)"
+    label_singular: "이력 항목"
+    description: "걸어온 길 — 마일스톤을 추가합니다."
+    folder: "src/content/timeline"
+    create: true
+    extension: md
+    format: frontmatter
+    sortable_fields: [year, order]
+    fields:
+      - { name: year, label: "연도(숫자)", widget: number, value_type: int }
+      - { name: date, label: "날짜 표기", widget: string, required: false, hint: '예: "2024.09"' }
+      - { name: title, label: "제목", widget: string }
+      - name: type
+        label: "유형"
+        widget: select
+        default: work
+        options:
+          - { label: "작업", value: work }
+          - { label: "수상/성취", value: award }
+          - { label: "언론", value: press }
+          - { label: "강의", value: lecture }
+          - { label: "설립", value: founding }
+          - { label: "기록", value: life }
+      - { name: order, label: "정렬 순서", widget: number, default: 0, required: false }
+      - { name: description, label: "한 줄 설명", widget: text, required: false }

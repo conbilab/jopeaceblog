@@ -1,0 +1,54 @@
+---
+import { GISCUS } from '../lib/site';
+
+interface Props {
+  term?: string; // 방명록처럼 고정 스레드를 쓰려면 mapping=specific + term
+}
+const { term } = Astro.props;
+const g = GISCUS;
+const useSpecific = Boolean(term);
+---
+
+{g.enabled && g.repoId && g.categoryId ? (
+  <div class="comments">
+    <script
+      is:inline
+      src="https://giscus.app/client.js"
+      data-repo={g.repo}
+      data-repo-id={g.repoId}
+      data-category={g.category}
+      data-category-id={g.categoryId}
+      data-mapping={useSpecific ? 'specific' : g.mapping}
+      data-term={term}
+      data-strict="0"
+      data-reactions-enabled={g.reactionsEnabled}
+      data-emit-metadata="0"
+      data-input-position="top"
+      data-theme="preferred_color_scheme"
+      data-lang={g.lang}
+      data-loading="lazy"
+      crossorigin="anonymous"
+      async
+    ></script>
+  </div>
+) : (
+  <div class="comments comments--setup card card--dashed">
+    <p class="cs-emoji" aria-hidden="true">🕊️</p>
+    <p class="cs-title">방명록은 곧 열립니다</p>
+    <p class="cs-desc">
+      GitHub 로그인 기반(giscus)으로 준비 중이에요. 익명 스팸 없이, 진짜 인사만 남는 공간으로 만들려고요.
+      설정 방법은 <code>src/lib/site.ts</code>의 <code>GISCUS</code>에 적어두었습니다.
+    </p>
+    <a class="btn btn-ghost" href="/contact">먼저 연락 남기기 →</a>
+  </div>
+)}
+
+<style>
+  .comments { margin-top: 2rem; }
+  .comments--setup { text-align: center; padding: 2.4rem 1.5rem; display: flex; flex-direction: column; align-items: center; gap: 0.6rem; }
+  .cs-emoji { font-size: 2rem; }
+  .cs-title { font-weight: 800; font-size: var(--step-1); color: var(--ink-strong); }
+  .cs-desc { color: var(--ink-soft); max-width: 44ch; font-size: 0.95rem; }
+  .comments--setup .btn { margin-top: 0.8rem; }
+  .cs-desc code { font-size: 0.85em; background: var(--bg-soft); padding: 0.1em 0.4em; border-radius: 5px; border: 1px solid var(--line); }
+</style>

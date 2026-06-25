@@ -1,0 +1,51 @@
+/* ============================================================
+   폰트 (self-host) — 보안 CSP `font-src 'self'` + 속도
+   본문/UI: Pretendard (고딕)  ·  디스플레이 액센트: Fraunces (라틴 세리프, variable)
+   ============================================================ */
+
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url('/fonts/Pretendard-Regular.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  src: url('/fonts/Pretendard-SemiBold.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: url('/fonts/Pretendard-Bold.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Pretendard';
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+  src: url('/fonts/Pretendard-ExtraBold.woff2') format('woff2');
+}
+
+/* Fraunces — variable (opsz, wght, SOFT, WONK). 라틴 디스플레이/숫자/날짜/키커 전용 */
+@font-face {
+  font-family: 'Fraunces';
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+  font-optical-sizing: auto;
+  src: url('/fonts/Fraunces-Variable.woff2') format('woff2-variations');
+}
+@font-face {
+  font-family: 'Fraunces';
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+  font-optical-sizing: auto;
+  src: url('/fonts/Fraunces-Variable-Italic.woff2') format('woff2-variations');
+}

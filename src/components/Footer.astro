@@ -1,0 +1,100 @@
+---
+import Logo from './Logo.astro';
+import { SITE, SOCIAL } from '../lib/site';
+import { CATEGORY_ORDER, CATEGORIES } from '../lib/categories';
+
+const year = 2026;
+const pages = [
+  { label: '소개', href: '/about' },
+  { label: 'Now', href: '/now' },
+  { label: '이력·연대기', href: '/timeline' },
+  { label: '쓰는 것들 (uses)', href: '/uses' },
+  { label: '방명록', href: '/guestbook' },
+  { label: '연락하기', href: '/contact' },
+  { label: '아카이브', href: '/archive' },
+];
+---
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="foot-top">
+      <div class="foot-brand">
+        <div class="fb-head">
+          <span class="fb-mark"><Logo size={40} stroke={2} /></span>
+          <div>
+            <div class="fb-title">{SITE.title}</div>
+            <div class="fb-tag">{SITE.tagline}</div>
+          </div>
+        </div>
+        <p class="fb-desc">{SITE.subtitle}. 영상 12년, 마케팅 6년, 강의 6년의 시간을 매일 한 줄씩 기록합니다.</p>
+        <p class="fb-give">🕊️ 수익의 1%는 아이들에게 — 말보다 행동으로 남기는 기록.</p>
+        <a class="btn btn-ghost fb-rss" href="/rss.xml">RSS 구독 →</a>
+      </div>
+
+      <nav class="foot-col" aria-label="코너">
+        <h3>코너</h3>
+        <ul role="list">
+          {CATEGORY_ORDER.map((k) => (
+            <li><a href={`/category/${k}`}>{CATEGORIES[k].name}<span class="fc-en"> · {CATEGORIES[k].label}</span></a></li>
+          ))}
+        </ul>
+      </nav>
+
+      <nav class="foot-col" aria-label="페이지">
+        <h3>둘러보기</h3>
+        <ul role="list">
+          {pages.map((p) => (<li><a href={p.href}>{p.label}</a></li>))}
+        </ul>
+      </nav>
+
+      <nav class="foot-col" aria-label="채널">
+        <h3>채널</h3>
+        <ul role="list">
+          {SOCIAL.filter((s) => s.href && s.href !== '#').map((s) => {
+            const ext = s.href.startsWith('http');
+            return (
+              <li><a href={s.href} target={ext ? '_blank' : undefined} rel={ext ? 'noopener noreferrer' : undefined}>{s.label}{s.handle && <span class="fc-en"> · {s.handle}</span>}</a></li>
+            );
+          })}
+        </ul>
+      </nav>
+    </div>
+
+    <div class="foot-bottom">
+      <p class="biz">
+        피스웍스(Peaceworks) · 대표 조재빈 · 사업자등록번호 731-24-00997 · 대전 기반
+      </p>
+      <p class="copy">© {year} {SITE.author} ({SITE.authorHandle}). 이 기록은 한 사람의 진짜 시간입니다.</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer { border-top: 1px solid var(--line); background: var(--bg-soft); padding-block: var(--space-2xl) var(--space-lg); margin-top: var(--space-3xl); }
+  .foot-top { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 2.5rem; padding-bottom: var(--space-xl); border-bottom: 1.5px dashed var(--dashed); }
+  .fb-head { display: flex; align-items: center; gap: 0.8rem; }
+  .fb-mark { color: var(--brand); }
+  .fb-title { font-weight: 800; font-size: 1.15rem; letter-spacing: -0.03em; color: var(--ink-strong); }
+  .fb-tag { font-family: var(--font-serif); font-style: italic; font-size: 0.9rem; color: var(--gold-ink); margin-top: 2px; }
+  .fb-desc { margin-top: 1.1rem; color: var(--ink-soft); font-size: 0.95rem; max-width: 34ch; }
+  .fb-give { margin-top: 0.8rem; color: var(--ink-mute); font-size: 0.86rem; }
+  .fb-rss { margin-top: 1.3rem; font-size: 0.82rem; padding: 0.6em 1.1em; }
+
+  .foot-col h3 { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.14em; color: var(--ink-mute); font-weight: 800; margin-bottom: 1rem; }
+  .foot-col ul { display: flex; flex-direction: column; gap: 0.7rem; }
+  .foot-col a { font-size: 0.92rem; color: var(--ink-soft); font-weight: 600; transition: color var(--dur-fast); }
+  .foot-col a:hover { color: var(--brand); }
+  .fc-en { color: var(--ink-faint); font-weight: 500; font-size: 0.82rem; }
+
+  .foot-bottom { padding-top: var(--space-md); display: flex; flex-direction: column; gap: 0.4rem; }
+  .biz { font-size: 0.82rem; color: var(--ink-mute); }
+  .copy { font-size: 0.82rem; color: var(--ink-faint); }
+
+  @media (max-width: 800px) {
+    .foot-top { grid-template-columns: 1fr 1fr; gap: 2rem; }
+    .fb-brand, .foot-brand { grid-column: 1 / -1; }
+  }
+  @media (max-width: 520px) {
+    .foot-top { grid-template-columns: 1fr; }
+  }
+</style>

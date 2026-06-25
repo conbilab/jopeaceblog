@@ -1,0 +1,226 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostCard from '../components/PostCard.astro';
+import Logo from '../components/Logo.astro';
+import { SITE, STATS } from '../lib/site';
+import { CATEGORY_ORDER, CATEGORIES } from '../lib/categories';
+import { getPublishedPosts, getFeaturedPosts } from '../lib/utils';
+
+const posts = await getPublishedPosts();
+const featured = await getFeaturedPosts(3);
+const latest = posts.slice(0, 7);
+const counts = Object.fromEntries(CATEGORY_ORDER.map((k) => [k, posts.filter((p) => p.data.category === k).length]));
+---
+
+<BaseLayout>
+  <!-- ===================== HERO ===================== -->
+  <section class="hero">
+    <div class="hero-orb" aria-hidden="true"></div>
+    <div class="wrap hero-inner">
+      <div class="hero-copy">
+        <span class="kicker">JOPIS — A record of making peace</span>
+        <h1 class="hero-title display">
+          화려하지 않아도 됩니다.<br />
+          <em>본질을</em> 기록합니다.
+        </h1>
+        <p class="hero-lead">
+          안녕하세요, <strong>콘텐츠로 평화를 만드는 사람</strong> 조재빈입니다.
+          대전에서 1인 기업 <a href="/about" class="u-line">피스웍스</a>를 운영하며,
+          일하고 · 생각하고 · 만들고 · 먹고 · 떠난 모든 순간을 이곳에 정직하게 적습니다.
+        </p>
+        <div class="hero-cta">
+          <a href="/about" class="btn btn-primary">저는 이런 사람입니다 →</a>
+          <a href="/log" class="btn btn-ghost">기록 둘러보기</a>
+        </div>
+        <ul class="stats" role="list">
+          {STATS.map((s) => (
+            <li class="stat">
+              <span class="stat-v num">{s.value}</span>
+              <span class="stat-l">{s.label}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="hero-figure reveal">
+        <div class="hf-frame">
+          <img src="/images/press-photo.jpg" alt="조재빈(조피스) — 'ALL GOOD' 벽 앞에서" loading="eager" />
+          <span class="hf-badge"><Logo size={22} stroke={2.4} /> 조피스</span>
+        </div>
+        <p class="hf-cap"><span class="num">2024</span> · 중도일보 인터뷰에서. “비싼 광고 없이도, 제대로 설명하면 승부할 수 있습니다.”</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 큐레이션: 대표 글 ===================== -->
+  {featured.length > 0 && (
+    <section class="section-sm">
+      <div class="wrap">
+        <div class="sec-head">
+          <span class="kicker kicker--caps">Start here</span>
+          <h2 class="h2 display">처음 오셨다면, 이 글부터</h2>
+          <p class="lead">명함을 보고 오셨나요? 저를 가장 잘 보여주는 글 몇 개를 골라두었습니다.</p>
+        </div>
+        <div class="feature-grid">
+          {featured.map((post, i) => (
+            <PostCard post={post} variant={i === 0 ? 'feature' : 'default'} index={i} />
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- ===================== 6개 코너 ===================== -->
+  <section class="section corners-sec">
+    <div class="wrap">
+      <div class="sec-head">
+        <span class="kicker kicker--caps">The corners</span>
+        <h2 class="h2 display">여섯 개의 기록 코너</h2>
+        <p class="lead">무거운 글도, 가벼운 단상도 한곳에. 보고 싶은 결을 골라 들어오세요.</p>
+      </div>
+      <div class="corners">
+        {CATEGORY_ORDER.map((k, i) => {
+          const c = CATEGORIES[k];
+          return (
+            <a href={`/category/${k}`} class="corner card reveal" data-delay={String((i % 4) + 1)} style={`--cat: var(${c.colorVar}); --cat-bg: var(${c.bgVar});`}>
+              <span class="corner-emoji" aria-hidden="true">{c.emoji}</span>
+              <span class="corner-head">
+                <span class="corner-name">{c.name}</span>
+                <span class="corner-count num">{counts[k] ?? 0}</span>
+              </span>
+              <span class="corner-label">{c.label}</span>
+              <span class="corner-concept">{c.concept}</span>
+              <span class="corner-go" aria-hidden="true">들어가기 →</span>
+            </a>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 최신 기록 ===================== -->
+  <section class="section-sm">
+    <div class="wrap">
+      <div class="sec-head sec-head--row">
+        <div>
+          <span class="kicker kicker--caps">Latest</span>
+          <h2 class="h2 display">요즘의 기록</h2>
+        </div>
+        <a href="/log" class="btn-text">전체 보기</a>
+      </div>
+      {latest.length > 0 ? (
+        <div class="latest-list">
+          {latest.map((post, i) => (<PostCard post={post} variant="list" index={i} />))}
+        </div>
+      ) : (
+        <p class="empty card card--dashed">아직 기록이 없습니다. 곧 첫 글이 올라옵니다. 🌱</p>
+      )}
+    </div>
+  </section>
+
+  <!-- ===================== 가치 / 신뢰 ===================== -->
+  <section class="section values-sec">
+    <div class="wrap values-inner">
+      <div class="values-copy reveal">
+        <span class="kicker">Why I write</span>
+        <h2 class="h2 display">자랑하려고 쓰지 않습니다.<br/>증명하려고 씁니다.</h2>
+        <p class="lead">
+          잘된 것도, 망한 것도 다 적습니다. 매끈한 성공담보다 정직한 과정이 사람을 더 믿게 한다고 믿어서요.
+          이 기록이 쌓이면, 굳이 설명하지 않아도 제가 어떤 사람인지 아실 거예요.
+        </p>
+        <a href="/about" class="btn-text">제 이야기 전부 읽기</a>
+      </div>
+      <ul class="values-list" role="list">
+        <li class="vrow reveal" data-delay="1"><span class="vrow-ic">📰</span><div><b>중도일보 보도</b><span>‘대전 마케팅 프로젝트 100’ — 소상공인 무료 컨설팅</span></div></li>
+        <li class="vrow reveal" data-delay="2"><span class="vrow-ic">🏪</span><div><b>전국 90개 가맹점</b><span>세차 프랜차이즈 온라인 마케팅 전담</span></div></li>
+        <li class="vrow reveal" data-delay="3"><span class="vrow-ic">🎬</span><div><b>영상 500편+</b><span>드라마·광고·홍보 / 기획부터 촬영까지</span></div></li>
+        <li class="vrow reveal" data-delay="4"><span class="vrow-ic">🕊️</span><div><b>수익의 1% 기부</b><span>매년 아이들에게 — 말보다 행동으로</span></div></li>
+      </ul>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* ---------- HERO ---------- */
+  .hero { position: relative; overflow: hidden; padding-block: clamp(2.5rem, 5vw, 5rem) clamp(3rem, 6vw, 6rem);
+    background: radial-gradient(120% 120% at 85% -5%, color-mix(in srgb, var(--brand-mid) 12%, transparent), transparent 55%),
+      radial-gradient(90% 90% at -5% 110%, color-mix(in srgb, var(--gold) 9%, transparent), transparent 55%); }
+  .hero-orb { position: absolute; top: -10%; right: -8%; width: 38rem; height: 38rem; border-radius: 50%; z-index: 0; pointer-events: none;
+    background: radial-gradient(circle, color-mix(in srgb, var(--brand-light) 16%, transparent), transparent 65%); filter: blur(40px); }
+  .hero-inner { position: relative; z-index: 1; display: grid; grid-template-columns: 1.15fr 0.85fr; gap: clamp(2rem, 5vw, 4.5rem); align-items: center; }
+  .hero-title { font-size: var(--step-6); font-weight: 420; margin-top: 1.1rem; }
+  .hero-title em { font-style: italic; color: var(--brand); }
+  .hero-lead { margin-top: 1.6rem; font-size: var(--step-1); line-height: 1.65; color: var(--ink-soft); max-width: 36ch; }
+  .hero-lead strong { color: var(--ink-strong); font-weight: 700; }
+  .hero-lead a { color: var(--gold-ink); font-weight: 700; }
+  .hero-cta { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: 1.8rem; }
+  .stats { display: flex; flex-wrap: wrap; gap: 1.8rem; margin-top: 2.4rem; padding-top: 1.6rem; border-top: 1.5px dashed var(--dashed); }
+  .stat { display: flex; flex-direction: column; }
+  .stat-v { font-size: var(--step-2); font-weight: 500; color: var(--brand); line-height: 1; }
+  .stat-l { font-size: 0.82rem; color: var(--ink-mute); margin-top: 0.35rem; font-weight: 600; }
+
+  .hero-figure { position: relative; }
+  .hf-frame { position: relative; border-radius: var(--r-lg); overflow: hidden; border: 1px solid var(--line); box-shadow: var(--shadow-lg); rotate: 1.5deg; transition: rotate var(--dur) var(--ease); }
+  .hf-frame:hover { rotate: 0deg; }
+  .hf-frame img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
+  .hf-badge { position: absolute; left: 0.9rem; bottom: 0.9rem; display: inline-flex; align-items: center; gap: 0.4em;
+    background: color-mix(in srgb, var(--bg) 86%, transparent); backdrop-filter: blur(8px); color: var(--brand);
+    font-weight: 800; font-size: 0.82rem; padding: 0.4em 0.8em; border-radius: var(--r-pill); border: 1px solid var(--line); }
+  .hf-cap { margin-top: 0.9rem; font-size: 0.8rem; color: var(--ink-mute); line-height: 1.5; padding-left: 0.2rem; }
+
+  /* ---------- 섹션 헤더 ---------- */
+  .sec-head { margin-bottom: 2.4rem; max-width: 46ch; }
+  .sec-head .h2 { margin-top: 0.6rem; }
+  .sec-head .lead { margin-top: 0.8rem; }
+  .sec-head--row { display: flex; justify-content: space-between; align-items: flex-end; max-width: none; }
+
+  /* ---------- 대표 글 그리드 ---------- */
+  .feature-grid { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 1.4rem; }
+  .feature-grid :global(.pc--feature) { grid-row: span 1; }
+
+  /* ---------- 코너 ---------- */
+  .corners-sec { background: var(--bg-soft); border-block: 1px solid var(--line); }
+  .corners { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4rem; }
+  .corner { display: flex; flex-direction: column; gap: 0.5rem; padding: 1.6rem 1.5rem 1.4rem; position: relative; overflow: hidden; }
+  .corner::before { content: ''; position: absolute; inset: 0 auto 0 0; width: 4px; background: var(--cat); opacity: 0.85; }
+  .corner:hover { border-color: color-mix(in srgb, var(--cat) 45%, transparent); }
+  .corner-emoji { font-size: 1.7rem; }
+  .corner-head { display: flex; align-items: baseline; justify-content: space-between; }
+  .corner-name { font-weight: 800; font-size: var(--step-1); color: var(--ink-strong); letter-spacing: -0.03em; }
+  .corner-count { font-size: 0.95rem; color: var(--cat); font-weight: 600; }
+  .corner-label { font-size: 0.78rem; color: var(--ink-mute); font-weight: 700; letter-spacing: 0.04em; }
+  .corner-concept { font-size: 0.9rem; color: var(--ink-soft); line-height: 1.55; margin-top: 0.2rem; }
+  .corner-go { margin-top: auto; padding-top: 0.8rem; font-size: 0.82rem; font-weight: 700; color: var(--cat); opacity: 0; transform: translateX(-6px); transition: all var(--dur) var(--ease); }
+  .corner:hover .corner-go { opacity: 1; transform: none; }
+
+  /* ---------- 최신 ---------- */
+  .latest-list { margin-top: 0.5rem; }
+  .empty { padding: 2.5rem; text-align: center; color: var(--ink-mute); }
+
+  /* ---------- 가치 ---------- */
+  .values-sec { background: var(--bg-soft); border-block: 1px solid var(--line); }
+  .values-inner { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 5vw, 4rem); align-items: center; }
+  .values-copy .h2 { margin-top: 0.6rem; }
+  .values-copy .lead { margin-top: 1rem; margin-bottom: 1.4rem; }
+  .values-list { display: flex; flex-direction: column; gap: 0.9rem; }
+  .vrow { display: flex; gap: 1rem; align-items: center; padding: 1.1rem 1.3rem; background: var(--card); border: 1px solid var(--line); border-radius: var(--r-md); transition: transform var(--dur) var(--ease), border-color var(--dur); }
+  .vrow:hover { transform: translateX(5px); border-color: var(--line-strong); }
+  .vrow-ic { font-size: 1.5rem; flex: none; }
+  .vrow div { display: flex; flex-direction: column; }
+  .vrow b { color: var(--ink-strong); font-size: 1rem; }
+  .vrow span { color: var(--ink-mute); font-size: 0.86rem; margin-top: 1px; }
+
+  /* ---------- 반응형 ---------- */
+  @media (max-width: 900px) {
+    .hero-inner { grid-template-columns: 1fr; }
+    .hero-figure { max-width: 26rem; order: -1; }
+    .feature-grid { grid-template-columns: 1fr 1fr; }
+    .feature-grid :global(.pc--feature) { grid-column: 1 / -1; } /* 대표 카드는 전폭 → 고립 카드 방지 */
+    .corners { grid-template-columns: 1fr 1fr; }
+    .values-inner { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 560px) {
+    .feature-grid, .corners { grid-template-columns: 1fr; }
+    .sec-head--row { flex-direction: column; align-items: flex-start; gap: 0.8rem; }
+  }
+</style>

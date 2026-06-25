@@ -1,0 +1,78 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { CATEGORY_ORDER, CATEGORIES } from '../../lib/categories';
+import { getPostsByCategory } from '../../lib/utils';
+
+export async function getStaticPaths() {
+  return CATEGORY_ORDER.map((key) => ({ params: { category: key }, props: { key } }));
+}
+
+const { key } = Astro.props;
+const cat = CATEGORIES[key];
+const posts = await getPostsByCategory(key);
+const style = `--cat: var(${cat.colorVar}); --cat-bg: var(${cat.bgVar});`;
+const others = CATEGORY_ORDER.filter((k) => k !== key);
+---
+
+<BaseLayout title={`${cat.name} · ${cat.label}`} description={`${cat.concept} — 조피스의 ${cat.label} 기록.`}>
+  <header class="cat-head" style={style}>
+    <div class="wrap">
+      <a href="/log" class="back-link">← 전체 기록</a>
+      <div class="ch-main">
+        <span class="ch-emoji" aria-hidden="true">{cat.emoji}</span>
+        <div>
+          <span class="kicker kicker--caps" style="color: var(--cat)">{cat.label}</span>
+          <h1 class="h1 display ch-title">{cat.name}</h1>
+          <p class="ch-concept">{cat.concept}</p>
+          <p class="ch-count num">{posts.length}개의 기록</p>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="cat-body">
+    <div class="wrap">
+      {posts.length > 0 ? (
+        <div class="cat-grid">
+          {posts.map((post, i) => (<PostCard post={post} variant="default" index={i} />))}
+        </div>
+      ) : (
+        <p class="cat-empty card card--dashed">이 코너엔 아직 기록이 없어요. 곧 채워집니다. 🌱</p>
+      )}
+    </div>
+  </section>
+
+  <section class="cat-others section-sm">
+    <div class="wrap">
+      <p class="co-h">다른 코너도 둘러보세요</p>
+      <div class="co-chips">
+        {others.map((k) => (
+          <a href={`/category/${k}`} class="chip" style={`--cat: var(${CATEGORIES[k].colorVar})`}>{CATEGORIES[k].emoji} {CATEGORIES[k].name}</a>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .cat-head { padding-top: clamp(1.5rem, 3vw, 2.5rem); padding-bottom: 2.2rem; background: linear-gradient(180deg, var(--cat-bg), transparent); border-bottom: 1px solid var(--line); }
+  .back-link { font-size: 0.85rem; color: var(--ink-mute); font-weight: 600; transition: color var(--dur-fast); }
+  .back-link:hover { color: var(--cat); }
+  .ch-main { display: flex; gap: 1.3rem; align-items: flex-start; margin-top: 1.5rem; }
+  .ch-emoji { font-size: clamp(2.5rem, 6vw, 3.6rem); line-height: 1; }
+  .ch-title { margin-top: 0.4rem; }
+  .ch-concept { margin-top: 0.7rem; font-size: var(--step-1); color: var(--ink-soft); max-width: 42ch; line-height: 1.55; }
+  .ch-count { margin-top: 0.9rem; font-size: 0.85rem; color: var(--cat); font-weight: 600; }
+
+  .cat-body { padding-top: 2.5rem; }
+  .cat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.4rem; }
+  .cat-empty { padding: 3rem; text-align: center; color: var(--ink-mute); }
+
+  .cat-others { border-top: 1px solid var(--line); margin-top: 2.5rem; background: var(--bg-soft); }
+  .co-h { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--ink-mute); font-weight: 800; margin-bottom: 1rem; }
+  .co-chips { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+
+  @media (max-width: 900px) { .cat-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 560px) { .cat-grid { grid-template-columns: 1fr; } }
+</style>

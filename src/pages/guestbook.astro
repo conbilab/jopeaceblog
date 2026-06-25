@@ -1,0 +1,28 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Comments from '../components/Comments.astro';
+---
+
+<BaseLayout title="방명록" description="다녀가신 흔적을 남겨주세요. GitHub 로그인 기반이라 익명 스팸 없이, 진짜 인사만 남습니다.">
+  <section class="gb">
+    <div class="wrap measure">
+      <span class="kicker kicker--caps">Guestbook</span>
+      <h1 class="h1 display gb-title">다녀가신 흔적,<br/>한 줄 남겨주세요</h1>
+      <p class="lead gb-intro">
+        오며 가며 든 생각, 응원, 또는 그냥 인사도 좋아요.
+        이 방명록은 GitHub 로그인으로만 글을 남길 수 있어서, 익명 스팸 없이 진짜 사람의 말만 모입니다.
+        남겨주신 한마디가, 혼자 일하는 1인 기업에게 생각보다 큰 힘이 됩니다.
+      </p>
+      <div class="gb-box">
+        <Comments />
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .gb { padding-top: clamp(2rem, 4vw, 3.5rem); }
+  .gb-title { margin-top: 0.6rem; }
+  .gb-intro { margin-top: 1.1rem; }
+  .gb-box { margin-top: 2.2rem; }
+</style>

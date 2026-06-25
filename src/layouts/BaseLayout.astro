@@ -1,0 +1,205 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { SITE, SOCIAL } from '../lib/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  type?: 'website' | 'article';
+  publishedTime?: Date;
+  noIndex?: boolean;
+  wide?: boolean;
+  jsonLd?: Record<string, unknown>;
+}
+
+const {
+  title,
+  description = SITE.description,
+  image = '/images/og-default.jpg',
+  type = 'website',
+  publishedTime,
+  noIndex = false,
+  jsonLd,
+} = Astro.props;
+
+const pageTitle = title ? `${title} — ${SITE.title}` : `${SITE.title} · ${SITE.tagline}`;
+const socialTitle = title ?? SITE.title; // 소셜 카드 헤드라인은 접미사 없이 간결하게
+const canonical = new URL(Astro.url.pathname, Astro.site ?? SITE.url).toString();
+const ogImage = new URL(image, Astro.site ?? SITE.url).toString();
+
+// 구조화데이터 (JSON-LD) — type=application/ld+json 데이터 블록은 CSP script-src 비적용
+const sameAs = SOCIAL.filter((s) => s.href && s.href !== '#' && s.href.startsWith('http')).map((s) => s.href);
+const siteLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      '@id': `${SITE.url}/#website`,
+      url: SITE.url,
+      name: SITE.title,
+      description: SITE.description,
+      inLanguage: 'ko-KR',
+    },
+    {
+      '@type': 'Person',
+      '@id': `${SITE.url}/#person`,
+      name: SITE.author,
+      alternateName: SITE.authorHandle,
+      url: SITE.url,
+      jobTitle: '콘텐츠 마케팅·영상 디렉터',
+      worksFor: { '@type': 'Organization', name: '피스웍스(Peaceworks)' },
+      ...(sameAs.length ? { sameAs } : {}),
+    },
+  ],
+};
+---
+
+<!doctype html>
+<html lang={SITE.lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noIndex && <meta name="robots" content="noindex, nofollow" />}
+
+    <!-- 테마 즉시 적용 (FOUC 방지) — CSP 해시 화이트리스트 대상 -->
+    <script is:inline>
+      (function () {
+        try {
+          var t = localStorage.getItem('theme');
+          if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+        } catch (e) {}
+      })();
+    </script>
+
+    <!-- 폰트 프리로드 (본문 핵심 weight) -->
+    <link rel="preload" href="/fonts/Pretendard-Regular.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/Pretendard-Bold.woff2" as="font" type="font/woff2" crossorigin />
+
+    <meta name="theme-color" content="#0f4536" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0d1814" media="(prefers-color-scheme: dark)" />
+
+    <!-- Open Graph / Twitter -->
+    <meta property="og:type" content={type} />
+    <meta property="og:title" content={socialTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:site_name" content={SITE.title} />
+    <meta property="og:locale" content={SITE.locale} />
+    {type === 'article' && publishedTime && (
+      <meta property="article:published_time" content={publishedTime.toISOString()} />
+    )}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={socialTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <!-- 구조화데이터 -->
+    <script type="application/ld+json" set:html={JSON.stringify(siteLd)} />
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+
+    <link rel="alternate" type="application/rss+xml" title={SITE.title} href="/rss.xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/images/logo-mark.jpg" />
+  </head>
+  <body>
+    <a href="#main" class="skip-link">본문으로 건너뛰기</a>
+    <div id="scroll-progress" aria-hidden="true"></div>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+
+    <!-- 번들 모듈 스크립트 (same-origin, CSP script-src 'self') -->
+    <script>
+      // ── 스크롤 진행바 ───────────────────────────────
+      const bar = document.getElementById('scroll-progress');
+      let ticking = false;
+      function onScroll() {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          const h = document.documentElement;
+          const max = h.scrollHeight - h.clientHeight;
+          const pct = max > 0 ? (h.scrollTop / max) * 100 : 0;
+          if (bar) bar.style.width = pct + '%';
+          ticking = false;
+        });
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+
+      // ── reveal on scroll ────────────────────────────
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const items = document.querySelectorAll('.reveal');
+      if (reduce || !('IntersectionObserver' in window)) {
+        items.forEach((el) => el.classList.add('in'));
+      } else {
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((e) => {
+              if (e.isIntersecting) {
+                e.target.classList.add('in');
+                io.unobserve(e.target);
+              }
+            });
+          },
+          { threshold: 0.12, rootMargin: '0px 0px -8% 0px' }
+        );
+        items.forEach((el) => io.observe(el));
+      }
+
+      // ── 테마 토글 ────────────────────────────────────
+      function currentTheme() {
+        const set = document.documentElement.getAttribute('data-theme');
+        if (set) return set;
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      function syncToggle(t: string) {
+        document.querySelectorAll('[data-theme-toggle]').forEach((b) => {
+          const el = b as HTMLElement;
+          el.setAttribute('aria-pressed', String(t === 'dark'));
+          el.setAttribute('aria-label', t === 'dark' ? '라이트 모드로 전환' : '다크 모드로 전환');
+        });
+      }
+      function applyTheme(t: string) {
+        document.documentElement.setAttribute('data-theme', t);
+        try { localStorage.setItem('theme', t); } catch (e) {}
+        syncToggle(t);
+      }
+      document.querySelectorAll('[data-theme-toggle]').forEach((btn) => {
+        btn.addEventListener('click', () => applyTheme(currentTheme() === 'dark' ? 'light' : 'dark'));
+      });
+      syncToggle(currentTheme());
+
+      // ── 모바일 메뉴 ──────────────────────────────────
+      const navToggle = document.querySelector('[data-nav-toggle]');
+      const mobileNav = document.getElementById('mobile-nav');
+      function setNav(open: boolean) {
+        document.body.classList.toggle('nav-open', open);
+        navToggle?.setAttribute('aria-expanded', String(open));
+        navToggle?.setAttribute('aria-label', open ? '메뉴 닫기' : '메뉴 열기');
+        if (mobileNav) {
+          mobileNav.toggleAttribute('data-open', open);
+          mobileNav.toggleAttribute('inert', !open); // 닫혔을 때 포커스/상호작용 차단
+        }
+      }
+      navToggle?.addEventListener('click', () => setNav(!document.body.classList.contains('nav-open')));
+      mobileNav?.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setNav(false)));
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && document.body.classList.contains('nav-open')) {
+          setNav(false);
+          (navToggle as HTMLElement | null)?.focus();
+        }
+      });
+    </script>
+  </body>
+</html>
