@@ -2,50 +2,84 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ProjectCard from '../../components/ProjectCard.astro';
 import { getProjects } from '../../lib/utils';
+import { CAREER_STATS, CAREER_DOMAINS } from '../../lib/career';
 
 const projects = await getProjects();
-const active = projects.filter((p) => p.data.status === 'active');
-const others = projects.filter((p) => p.data.status !== 'active');
 ---
 
-<BaseLayout title="일과 프로젝트" description="조피스가 실제로 해온 일과 배우고 있는 것. 마케팅·AI 영상·콘텐츠·세차의고수·홈페이지 제작 등.">
+<BaseLayout title="일과 프로젝트" description="영상·유튜브·마케팅·강의·글쓰기·세차의고수·AI까지 — 조피스가 그동안 해온 일들.">
   <header class="work-head">
-    <div class="wrap measure">
-      <h1 class="page-title">일과 프로젝트</h1>
+    <div class="wrap">
+      <h1 class="page-title">그동안 한 일</h1>
       <p class="page-lead">
-        제가 어떤 일을 하는 사람인지 보여주는 페이지입니다.
-        다만 “나를 고용하세요”보다, <strong>실제로 해온 일과 지금 배우고 있는 것</strong>이 먼저 보였으면 합니다.
+        한 가지만 파는 사람은 아니었습니다. 영상에서 시작해 유튜브·마케팅·강의·글쓰기·AI까지,
+        <strong>필요하면 배워서 해냈고, 그걸 다시 남에게 나눴습니다.</strong>
       </p>
+      <ul class="stat-strip" role="list">
+        {CAREER_STATS.map((s) => (
+          <li><span class="ss-v">{s.value}</span><span class="ss-l">{s.label}</span></li>
+        ))}
+      </ul>
     </div>
   </header>
 
-  <section class="work-body">
+  <!-- 활동 영역(브레드스) -->
+  <section class="section domains-sec">
     <div class="wrap">
-      {active.length > 0 && (
-        <>
-          <p class="grp-label">진행 중</p>
-          <div class="proj-grid">{active.map((p, i) => (<ProjectCard project={p} index={i} />))}</div>
-        </>
-      )}
-      {others.length > 0 && (
-        <>
-          <p class="grp-label grp-label--mt">완료 · 보류</p>
-          <div class="proj-grid">{others.map((p, i) => (<ProjectCard project={p} index={i} />))}</div>
-        </>
-      )}
+      <div class="domains">
+        {CAREER_DOMAINS.map((d, i) => (
+          <article class="domain reveal" data-delay={String((i % 4) + 1)}>
+            <span class="dom-icon" aria-hidden="true">{d.icon}</span>
+            <h2 class="dom-name">{d.name}</h2>
+            <p class="dom-blurb">{d.blurb}</p>
+            <ul class="dom-items" role="list">
+              {d.items.map((it) => (<li>{it}</li>))}
+            </ul>
+          </article>
+        ))}
+      </div>
     </div>
   </section>
+
+  <!-- 대표 프로젝트 -->
+  {projects.length > 0 && (
+    <section class="section proj-sec">
+      <div class="wrap">
+        <div class="sec-head"><h2 class="sec-title">지금, 대표 프로젝트</h2></div>
+        <div class="proj-grid">{projects.map((p, i) => (<ProjectCard project={p} index={i} />))}</div>
+      </div>
+    </section>
+  )}
 </BaseLayout>
 
 <style>
-  .work-head { padding-top: clamp(2rem, 4vw, 3rem); padding-bottom: 1.2rem; border-bottom: 1px solid var(--line); }
+  .work-head { padding-top: clamp(2rem, 4vw, 3rem); padding-bottom: 1.5rem; }
   .page-title { font-size: var(--step-4); font-weight: 800; letter-spacing: -0.04em; color: var(--ink-strong); }
-  .page-lead { margin-top: 0.8rem; color: var(--ink-soft); font-size: 1.05rem; line-height: 1.7; max-width: 50ch; }
+  .page-lead { margin-top: 0.8rem; color: var(--ink-soft); font-size: 1.08rem; line-height: 1.75; max-width: 54ch; }
   .page-lead strong { color: var(--ink-strong); }
-  .work-body { padding-top: 2rem; }
-  .grp-label { font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-mute); margin-bottom: 1rem; }
-  .grp-label--mt { margin-top: 2.5rem; }
+  .stat-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-top: 2rem; padding: 1.4rem 1.6rem; background: var(--ink-strong); border-radius: var(--r-lg); }
+  :root[data-theme='dark'] .stat-strip { background: #100e0a; border: 1px solid var(--line); }
+  .stat-strip li { display: flex; flex-direction: column; gap: 0.25rem; text-align: center; }
+  .ss-v { font-size: clamp(1.5rem, 3vw, 2.1rem); font-weight: 800; color: var(--color-primary); letter-spacing: -0.02em; }
+  :root[data-theme='dark'] .ss-v { color: var(--color-primary-ink); }
+  .ss-l { font-size: 0.8rem; color: #cbc4b2; font-weight: 600; }
+
+  .domains-sec { padding-top: 2.5rem; }
+  .domains { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.2rem; }
+  .domain { position: relative; padding: 1.6rem 1.7rem; background: var(--color-card); border: 1px solid var(--line); border-radius: var(--r-card); transition: border-color var(--dur), transform var(--dur) var(--ease); overflow: hidden; }
+  .domain::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--color-primary); opacity: 0.7; }
+  .domain:hover { transform: translateY(-3px); border-color: var(--line-strong); }
+  .dom-icon { font-size: 1.7rem; }
+  .dom-name { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.03em; color: var(--ink-strong); margin-top: 0.5rem; }
+  .dom-blurb { margin-top: 0.5rem; color: var(--ink-soft); font-size: 0.95rem; line-height: 1.65; }
+  .dom-items { display: flex; flex-wrap: wrap; gap: 0.4rem 0.5rem; margin-top: 1rem; }
+  .dom-items li { font-size: 0.78rem; font-weight: 600; color: var(--ink-soft); background: var(--bg-soft); border: 1px solid var(--line); padding: 0.32em 0.6em; border-radius: var(--r-pill); }
+
+  .proj-sec { border-top: 1px solid var(--line); }
+  .sec-head { margin-bottom: 1.5rem; }
+  .sec-title { font-size: var(--step-2); font-weight: 800; letter-spacing: -0.035em; color: var(--ink-strong); }
   .proj-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.1rem; }
-  @media (max-width: 880px) { .proj-grid { grid-template-columns: 1fr 1fr; } }
-  @media (max-width: 560px) { .proj-grid { grid-template-columns: 1fr; } }
+
+  @media (max-width: 820px) { .domains { grid-template-columns: 1fr; } .proj-grid { grid-template-columns: 1fr 1fr; } .stat-strip { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 520px) { .proj-grid { grid-template-columns: 1fr; } }
 </style>
