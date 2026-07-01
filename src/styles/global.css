@@ -140,16 +140,16 @@ h1, h2, h3, h4 {
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 0.5em;
   font-weight: 700; font-size: var(--step--1);
-  padding: 0.85em 1.5em; border-radius: var(--r-pill);
+  padding: 0.85em 1.5em; border-radius: var(--r-md);
   transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease),
     background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
   position: relative; overflow: hidden; line-height: 1;
 }
 .btn:hover { transform: translateY(-2px); }
 .btn:active { transform: translateY(0); }
-.btn-primary { background: var(--brand); color: #fdfcf8; box-shadow: 0 6px 18px rgba(15, 69, 54, 0.28); }
-.btn-primary:hover { background: var(--brand-d, var(--c-green-d)); box-shadow: 0 10px 26px rgba(15, 69, 54, 0.36); }
-:root[data-theme='dark'] .btn-primary { background: var(--brand); color: #08130f; }
+.btn-primary { background: var(--color-primary-ink); color: #fff8f2; box-shadow: 0 4px 14px rgba(173, 67, 27, 0.26); }
+.btn-primary:hover { background: var(--color-primary-deep); box-shadow: 0 8px 22px rgba(173, 67, 27, 0.32); }
+:root[data-theme='dark'] .btn-primary { background: var(--color-primary); color: #1c1006; }
 .btn-ghost { background: var(--card); color: var(--ink-strong); border: 1.5px solid var(--line-strong); }
 .btn-ghost:hover { border-color: var(--brand-mid); color: var(--brand); }
 .btn-gold { background: var(--gold); color: #1f1503; box-shadow: 0 6px 18px rgba(169, 119, 47, 0.3); }

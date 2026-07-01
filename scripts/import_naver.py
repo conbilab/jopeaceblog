@@ -226,13 +226,21 @@ def to_markdown(body_html: str, url_to_local: dict[str, str]) -> str:
     for sel in ["script", "style", ".se-oglink", ".se-sticker", ".__se_module_data"]:
         for el in soup.select(sel):
             el.decompose()
+    # 이미지를 감싼 빈 링크(href='#'/javascript)는 풀어준다 → [![](x)](#) 방지
+    for a in soup.find_all("a"):
+        href = (a.get("href") or "").strip()
+        if a.find("img") and (href in ("", "#") or href.lower().startswith("javascript")):
+            a.unwrap()
     # 이미지 경로 치환
     for img in soup.find_all("img"):
         src = _hires(img.get("src", ""))
         if src in url_to_local:
             img["src"] = url_to_local[src]
             img["alt"] = img.get("alt", "")
-    text = md(str(soup), heading_style="ATX", strip=["span", "font"], bullets="-")
+    text = md(
+        str(soup), heading_style="ATX", strip=["span", "font"], bullets="-",
+        escape_asterisks=False, escape_underscores=False, escape_misc=False,
+    )
     return _tidy(text)
 
 
@@ -351,8 +359,11 @@ def _tidy(md_text: str) -> str:
 
 
 def _make_description(md_text: str, limit: int = 110) -> str:
-    plain = re.sub(r"[#>*_!\[\]()\-`]", "", md_text)
+    plain = re.sub(r"!\[[^\]]*\]\([^)]*\)", "", md_text)   # 이미지 마크다운 제거
+    plain = re.sub(r"\[([^\]]*)\]\([^)]*\)", r"\1", plain)  # 링크는 텍스트만 남김
     plain = re.sub(r"https?://\S+", "", plain)
+    plain = plain.replace("\\", "")                        # 이스케이프 백슬래시 제거
+    plain = re.sub(r"[#>*_`\u200b]", "", plain)            # 잔여 마크다운/제로폭공백 제거
     plain = _clean(plain)
     return (plain[:limit] + "…") if len(plain) > limit else plain
 

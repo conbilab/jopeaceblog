@@ -1,134 +1,141 @@
 /* ============================================================
-   피스노트(Peace Note) 디자인 토큰
-   따뜻한 종이 70% + 정직한 공개 아카이브 30%.
-   과하지 않은 보라 포인트. 회사 홈페이지/개발자 블로그 느낌 금지.
+   피스노트(Peace Note) 디자인 토큰 — 성숙한 에디토리얼 버전
+   따뜻한 종이 + 깊은 먹색(거의 모노크롬) + 절제된 브론즈 포인트.
+   파스텔/이모지블록 없이, 타이포와 여백으로 끌고 간다.
    ============================================================ */
 
 :root {
-  /* ---- 스펙 컬러 시스템 ---- */
-  --color-bg: #fbf8f2;        /* 따뜻한 종이색 */
-  --color-bg-soft: #f1ede5;
-  --color-text: #222222;      /* 본문 */
-  --color-text-muted: #6f6a61;
-  --color-border: #e3ded2;    /* 흐린 베이지 구분선 */
-  --color-primary: #6b5b95;   /* 차분한 보라 */
-  --color-primary-soft: #eee8fa;
-  --color-green: #2f7d5c;     /* 성장·실천 */
-  --color-warm: #b8794a;      /* 따뜻한 황토(매거진 온기) */
-  --color-warning: #b45309;   /* 반성·주의·실패 */
-  --color-card: #ffffff;
+  /* ---- 컬러 시스템 (warm paper + charcoal ink + bronze) ---- */
+  --color-bg: #faf6ee;
+  --color-bg-soft: #f0eadd;
+  --color-card: #fffdf8;
+  --color-text: #211d16;       /* 깊은 따뜻한 먹색 */
+  --color-text-muted: #6c6456;
+  --color-border: #e2dac9;
+
+  --color-primary: #d1552a;     /* 번트 오렌지 — 하나의 강렬한 포인트(조피스 시그니처) */
+  --color-primary-soft: #f8e7db;
+  --color-primary-ink: #ad431b;  /* 종이 위 텍스트/링크(AA 대비 확보) */
+  --color-primary-deep: #8c3413;
+
+  --color-green: #2f6a4f;
+  --color-warm: #9c6b3a;
+  --color-warning: #9a4a1f;
   --color-white: #ffffff;
 
-  /* 보라 명암 보강 */
-  --color-primary-ink: #574a7c;  /* 종이 위 보라 텍스트(대비 확보) */
-  --color-primary-deep: #4a3f6b;
-
-  /* ---- 레거시 별칭(기존 인프라 호환) ---- */
+  /* ---- 레거시 별칭 ---- */
   --bg: var(--color-bg);
   --bg-soft: var(--color-bg-soft);
-  --bg-sunk: #ece6d8;
-  --card: var(--color-white);
-  --card-2: #fdfbf6;
+  --bg-sunk: #e9e1cf;
+  --card: var(--color-card);
+  --card-2: #fbf8f1;
   --ink: var(--color-text);
-  --ink-strong: #1a1a18;
-  --ink-soft: #4a463f;
+  --ink-strong: #16130d;
+  --ink-soft: #463f33;
   --ink-mute: var(--color-text-muted);
-  --ink-faint: #968f82;
+  --ink-faint: #968d7b;
   --brand: var(--color-primary);
   --brand-mid: var(--color-primary);
-  --brand-light: #8678ab;
-  --gold: var(--color-warning);
-  --gold-ink: #9a4708;
+  --brand-light: #9c7c4c;
+  --gold: var(--color-warm);
+  --gold-ink: #855417;
   --terra: var(--color-warning);
-  --terra-ink: #9a4708;
+  --terra-ink: #8a4019;
   --sage: var(--color-green);
   --line: var(--color-border);
-  --line-soft: #ece7db;
-  --line-strong: #d7d0c0;
-  --dashed: #d2cab8;
+  --line-soft: #ebe4d4;
+  --line-strong: #d4cab5;
+  --dashed: #cfc5ad;
   --link: var(--color-primary-ink);
   --link-hover: var(--color-primary-deep);
-  --selection: rgba(107, 91, 149, 0.18);
+  --selection: rgba(209, 85, 42, 0.18);
 
   /* ---- 타이포 ---- */
   --font-sans: 'Pretendard', 'Noto Sans KR', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   --font-serif: 'Fraunces', 'Pretendard', Georgia, serif;
-
-  /* 스펙: 본문 17px / 1.75, 제목 clamp */
+  --font-hand: 'Nanum Pen', 'Fraunces', cursive;
   --fs-body: 17px;
   --lh-body: 1.75;
   --step--2: 0.76rem;
   --step--1: 0.875rem;
-  --step-0: 1.0625rem;  /* 17px */
+  --step-0: 1.0625rem;
   --step-1: 1.2rem;
   --step-2: clamp(1.45rem, 2.4vw, 1.85rem);
-  --step-3: clamp(1.7rem, 3vw, 2.4rem);   /* h2 */
+  --step-3: clamp(1.7rem, 3vw, 2.4rem);
   --step-4: clamp(2.05rem, 4vw, 3.1rem);
-  --step-5: clamp(2.4rem, 5vw, 4.5rem);   /* h1 hero */
+  --step-5: clamp(2.4rem, 5vw, 4.4rem);
   --step-6: clamp(2.6rem, 6vw, 5rem);
-
   --leading-body: 1.75;
-  --leading-tight: 1.15;
+  --leading-tight: 1.14;
   --leading-snug: 1.35;
   --tracking-body: -0.003em;
   --tracking-tight: -0.022em;
-  --tracking-wide: 0.12em;
+  --tracking-wide: 0.14em;
 
-  /* ---- 레이아웃 폭(스펙) ---- */
-  --measure: 45rem;          /* 글 본문 720px */
-  --container: 67.5rem;      /* 1080px */
+  /* ---- 레이아웃 ---- */
+  --measure: 45rem;
+  --container: 67.5rem;
   --container-wide: 75rem;
   --gutter: clamp(1.15rem, 0.6rem + 2.4vw, 2rem);
 
-  /* ---- 스페이싱 ---- */
   --space-2xs: 0.375rem; --space-xs: 0.625rem; --space-sm: 1rem;
   --space-md: 1.5rem; --space-lg: 2.5rem; --space-xl: 4rem;
   --space-2xl: 6rem; --space-3xl: clamp(4rem, 3rem + 6vw, 7.5rem);
 
-  /* ---- 반경/모션 (매거진 카드: 넉넉하게) ---- */
-  --r-xs: 6px; --r-sm: 12px; --r-md: 18px; --r-lg: 22px; --r-xl: 28px; --r-pill: 999px;
-  --r-card: 20px; --r-hero: 32px;
+  /* ---- 반경: 타이트하게(성숙) ---- */
+  --r-xs: 4px; --r-sm: 8px; --r-md: 10px; --r-lg: 12px; --r-xl: 14px; --r-pill: 999px;
+  --r-card: 12px; --r-hero: 14px;
+
   --ease: cubic-bezier(0.2, 0.7, 0.3, 1);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --dur-fast: 0.16s; --dur: 0.28s; --dur-slow: 0.6s;
+  --dur-fast: 0.16s; --dur: 0.26s; --dur-slow: 0.55s;
 
-  /* ---- 그림자: 아주 약하게(스펙) ---- */
-  --shadow-sm: 0 1px 2px rgba(40, 34, 24, 0.04);
-  --shadow-md: 0 6px 22px rgba(40, 34, 24, 0.07);
-  --shadow-lg: 0 16px 44px rgba(74, 63, 107, 0.10);
+  --shadow-sm: 0 1px 2px rgba(40, 33, 20, 0.04);
+  --shadow-md: 0 5px 18px rgba(40, 33, 20, 0.06);
+  --shadow-lg: 0 14px 40px rgba(40, 33, 20, 0.10);
 
   --z-nav: 60; --z-overlay: 80; --z-top: 100;
-  --grain-opacity: 0.018;
+  --grain-opacity: 0.02;
 
   /* ============================================================
-     기록 유형(type) 뱃지 색 — 과하지 않게
+     기록 유형 색 — 깊고 절제된 톤(파스텔 아님). 작은 점/얇은 룰에만 사용.
      ============================================================ */
-  --t-thought-bg: #eee8fa;   --t-thought-ink: #5b4b86;   /* 생각한 것 · 연보라 */
-  --t-feeling-bg: #f0e9dd;   --t-feeling-ink: #7c6f55;   /* 느낀 것 · 베이지 */
-  --t-action-bg: #e2efe6;    --t-action-ink: #2f7d5c;    /* 해본 것 · 연초록 */
-  --t-work-bg: #e4ddf1;      --t-work-ink: #574a7c;      /* 일한 것 · 보라 */
-  --t-food-bg: #fbe8d8;      --t-food-ink: #b45309;      /* 먹고 간 곳 · 주황 */
-  --t-learning-bg: #e6ecef;  --t-learning-ink: #4a6075;  /* 배운 것 · 차분한 청회 */
-  --t-revision-bg: #eee2d3;  --t-revision-ink: #8a5a2b;  /* 고친 것 · 갈색 */
-  --t-standard-bg: #e2efe6;  --t-standard-ink: #2f7d5c;  /* 지키고 싶은 것 · 초록 */
+  --t-thought-bg: #efeae0;   --t-thought-ink: #5f5142;
+  --t-feeling-bg: #efeae0;   --t-feeling-ink: #5f5142;
+  --t-action-bg: #efeae0;    --t-action-ink: #5f5142;
+  --t-work-bg: #efeae0;      --t-work-ink: #5f5142;
+  --t-food-bg: #efeae0;      --t-food-ink: #5f5142;
+  --t-learning-bg: #efeae0;  --t-learning-ink: #5f5142;
+  --t-revision-bg: #efeae0;  --t-revision-ink: #5f5142;
+
+  /* 유형별 '점' 색 (깊은 톤) */
+  --t-thought-dot: #6a5a86;
+  --t-feeling-dot: #8a7048;
+  --t-action-dot: #3f7d5c;
+  --t-work-dot: #45607a;
+  --t-food-dot: #a8572f;
+  --t-learning-dot: #586b7a;
+  --t-revision-dot: #8a5a36;
 }
 
-/* 다크모드는 스펙상 '나중' — 라이트(종이) 기본. 사용자가 명시적으로 켰을 때만 살짝 어둡게. */
+/* 다크모드(나중) — 라이트 기본 */
 :root[data-theme='dark'] {
   color-scheme: dark;
-  --color-bg: #1c1a16; --color-bg-soft: #232019; --color-white: #26231d; --color-card: #26231d; --color-warm: #cf9a68;
-  --color-text: #ece8df; --color-text-muted: #a39d90; --color-border: #36322a;
-  --color-primary: #a596cf; --color-primary-soft: #2b2740; --color-primary-ink: #b7aadd; --color-primary-deep: #c8bdea;
-  --color-green: #5fb087; --color-warning: #d98a4a;
-  --bg-sunk: #16140f; --card: #26231d; --card-2: #221f19;
-  --ink-strong: #f6f3ea; --ink-soft: #cfcabd; --ink-faint: #7e7869;
-  --brand-light: #b7aadd; --gold-ink: #d98a4a; --terra-ink: #d98a4a;
-  --line-soft: #2c281f; --line-strong: #45402f; --dashed: #45402f;
-  --link: #b7aadd; --link-hover: #c8bdea; --selection: rgba(165, 150, 207, 0.26);
-  --shadow-sm: 0 1px 2px rgba(0,0,0,.3); --shadow-md: 0 8px 26px rgba(0,0,0,.4); --shadow-lg: 0 18px 48px rgba(0,0,0,.5);
+  --color-bg: #1a1814; --color-bg-soft: #211e18; --color-card: #232019; --color-white: #232019;
+  --color-text: #e9e4d8; --color-text-muted: #a39a88; --color-border: #34302a;
+  --color-primary: #e2764a; --color-primary-soft: #2e2016; --color-primary-ink: #ea8a60; --color-primary-deep: #f0a07e;
+  --color-green: #5fae87; --color-warm: #cf9a68; --color-warning: #cf7a44;
+  --bg-sunk: #141210; --card: #232019; --card-2: #1f1c16;
+  --ink-strong: #f5f0e4; --ink-soft: #cdc6b6; --ink-faint: #7e776a;
+  --brand-light: #d2a96f; --gold-ink: #cf9a68; --terra-ink: #cf7a44; --sage: #5fae87;
+  --line-soft: #2a2620; --line-strong: #443e32; --dashed: #443e32;
+  --link: #ea8a60; --link-hover: #f0a07e; --selection: rgba(226, 118, 74, 0.26);
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.3); --shadow-md: 0 6px 22px rgba(0,0,0,.4); --shadow-lg: 0 16px 44px rgba(0,0,0,.5);
   --grain-opacity: 0.03;
-  --t-thought-bg:#2b2740; --t-thought-ink:#bdb1e3; --t-feeling-bg:#2b2620; --t-feeling-ink:#cdbf9f;
-  --t-action-bg:#1f2c24; --t-action-ink:#79c4a0; --t-work-bg:#2a2640; --t-work-ink:#b7aadd;
-  --t-food-bg:#2e2117; --t-food-ink:#e0995c; --t-learning-bg:#1e272c; --t-learning-ink:#8fb0c6;
-  --t-revision-bg:#2c241a; --t-revision-ink:#ca9061; --t-standard-bg:#1f2c24; --t-standard-ink:#79c4a0;
+  --t-thought-bg:#262219; --t-thought-ink:#c8bba6;
+  --t-feeling-bg:#262219; --t-feeling-ink:#c8bba6; --t-action-bg:#262219; --t-action-ink:#c8bba6;
+  --t-work-bg:#262219; --t-work-ink:#c8bba6; --t-food-bg:#262219; --t-food-ink:#c8bba6;
+  --t-learning-bg:#262219; --t-learning-ink:#c8bba6; --t-revision-bg:#262219; --t-revision-ink:#c8bba6;
+  --t-thought-dot:#9a8cb6; --t-feeling-dot:#c0a578; --t-action-dot:#6fb893; --t-work-dot:#7e97b0;
+  --t-food-dot:#cf8a5c; --t-learning-dot:#8ea4b6; --t-revision-dot:#bd8a64;
 }

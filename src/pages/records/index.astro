@@ -68,8 +68,7 @@ const usedTopics = TOPIC_ORDER.filter((k) => topicCount(k) > 0);
   .chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
   .fchip { font-size: 0.85rem; font-weight: 700; padding: 0.45em 0.8em; border-radius: var(--r-pill); border: 1px solid var(--line); background: var(--card); color: var(--ink-soft); transition: all var(--dur-fast) var(--ease); }
   .fchip:hover { border-color: var(--line-strong); }
-  .fchip.is-active { background: var(--bg, var(--color-primary)); color: var(--ink, #fff); border-color: transparent; }
-  .fchip--plain.is-active { background: var(--color-primary); color: #fff; }
+  .fchip.is-active, .fchip--plain.is-active { background: var(--ink-strong); color: #f7f1e4; border-color: transparent; }
   .fc-n { opacity: 0.6; font-size: 0.85em; margin-left: 0.15em; }
 
   .rec-body { padding-top: 2rem; }

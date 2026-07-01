@@ -4,36 +4,35 @@ import { getType, getStatus, getTopic } from '../lib/taxonomy';
 interface Props {
   kind: 'type' | 'status' | 'topic';
   value: string;
-  showEmoji?: boolean;
   class?: string;
 }
-const { kind, value, showEmoji = false, class: className = '' } = Astro.props;
-
-let label = value;
-let style = '';
-let cls = 'badge';
-
-if (kind === 'type') {
-  const t = getType(value);
-  label = (showEmoji ? t.emoji + ' ' : '') + t.label;
-  style = `--bg: var(${t.bg}); --ink: var(${t.ink});`;
-  cls += ' badge--type';
-} else if (kind === 'status') {
-  const s = getStatus(value);
-  label = s.emoji + ' ' + s.label;
-  cls += ' badge--status';
-} else {
-  label = getTopic(value);
-  cls += ' badge--topic';
-}
+const { kind, value, class: className = '' } = Astro.props;
 ---
 
-<span class={`${cls} ${className}`} style={style}>{label}</span>
+{kind === 'type' && (() => {
+  const t = getType(value);
+  const dotVar = t.bg.replace('-bg', '-dot');
+  return (
+    <span class={`badge badge--type ${className}`} style={`--dot: var(${dotVar});`}>
+      <span class="b-dot" aria-hidden="true"></span>{t.label}
+    </span>
+  );
+})()}
+
+{kind === 'status' && (() => {
+  const s = getStatus(value);
+  return <span class={`badge badge--status ${className}`}>{s.emoji} {s.label}</span>;
+})()}
+
+{kind === 'topic' && (
+  <span class={`badge badge--topic ${className}`}>{getTopic(value)}</span>
+)}
 
 <style>
-  .badge { display: inline-flex; align-items: center; font-size: 0.72rem; font-weight: 700; line-height: 1; padding: 0.4em 0.65em; border-radius: 6px; white-space: nowrap; letter-spacing: 0.01em; }
-  .badge--type { background: var(--bg, var(--bg-soft)); color: var(--ink, var(--ink-soft)); }
-  .badge--status { background: transparent; color: var(--ink-mute); border: 1px solid var(--line-strong); border-radius: var(--r-pill); font-weight: 600; }
-  .badge--topic { background: transparent; color: var(--ink-mute); font-weight: 600; padding-inline: 0; }
-  .badge--topic::before { content: ''; }
+  .badge { display: inline-flex; align-items: center; font-size: 0.74rem; font-weight: 700; line-height: 1; white-space: nowrap; }
+  .badge--type { gap: 0.4em; color: var(--ink-soft); letter-spacing: 0.01em; }
+  .b-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--dot, var(--color-primary)); }
+  .badge--status { color: var(--ink-mute); font-weight: 600; border: 1px solid var(--line-strong); border-radius: var(--r-pill); padding: 0.35em 0.6em; font-size: 0.7rem; }
+  .badge--topic { color: var(--ink-mute); font-weight: 600; }
+  .badge--topic::before { content: '·'; margin-right: 0.4em; opacity: 0.5; }
 </style>
