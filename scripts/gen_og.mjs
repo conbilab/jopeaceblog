@@ -19,10 +19,11 @@ const svg = `
 
   <text x="104" y="150" font-family="'Pretendard','Noto Sans KR',sans-serif" font-weight="800" font-size="40" letter-spacing="-1" fill="#211d16">피스노트<tspan font-size="20" letter-spacing="3" fill="#ad431b" dx="16"> PEACE NOTE</tspan></text>
 
-  <text x="100" y="348" font-family="'Pretendard','Noto Sans KR',sans-serif" font-weight="800" font-size="96" letter-spacing="-3" fill="#211d16">배워서, <tspan fill="#d1552a">남 줍니다.</tspan></text>
+  <text x="100" y="312" font-family="'Pretendard','Noto Sans KR',sans-serif" font-weight="800" font-size="74" letter-spacing="-2.5" fill="#211d16">제가 겪고 느낀 것을,</text>
+  <text x="100" y="398" font-family="'Pretendard','Noto Sans KR',sans-serif" font-weight="800" font-size="74" letter-spacing="-2.5" fill="#211d16"><tspan fill="#d1552a">다정하게</tspan> 적어둡니다.</text>
 
-  <text x="102" y="452" font-family="'Pretendard','Noto Sans KR',sans-serif" font-weight="600" font-size="30" fill="#6c6456">보고 배우고 만든 것을, 정리해서 나누는 기록.</text>
-  <text x="102" y="512" font-family="'Pretendard','Noto Sans KR',sans-serif" font-weight="600" font-size="23" fill="#968d7b">영상 12년 · 500편+ · 블로그 262편 · 마케팅·강의·AI</text>
+  <text x="102" y="480" font-family="'Pretendard','Noto Sans KR',sans-serif" font-weight="600" font-size="28" fill="#6c6456">보고 배우고 만든 것을, 천천히 적어둡니다.</text>
+  <text x="102" y="528" font-family="'Pretendard','Noto Sans KR',sans-serif" font-weight="600" font-size="22" fill="#968d7b">영상 12년 · 500편+ · 블로그 262편 · 마케팅·강의·AI</text>
 </svg>`;
 
 await sharp(Buffer.from(svg)).jpeg({ quality: 90 }).toFile(out);

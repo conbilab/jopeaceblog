@@ -1,6 +1,6 @@
 ---
 title: "개인 브랜딩 블로그 피스노트"
-oneliner: "배워서 남 주는 마음으로, 일과 생각을 공개로 정리해 나누는 블로그를 운영합니다."
+oneliner: "제가 겪고 배운 것을 진심으로 적어두는, 공개 기록 블로그를 운영합니다."
 status: active
 topic: content
 period: "2024~"
