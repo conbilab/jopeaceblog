@@ -4,7 +4,8 @@ import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 
 // ⚠️ 배포 도메인이 정해지면 site 값을 실제 주소로 바꿔주세요 (RSS·사이트맵·OG에 사용됩니다)
-const SITE = 'https://jopis.kr';
+// 피스노트.com (한글 도메인 → 퓨니코드)
+const SITE = 'https://xn--o80bq93a37lsnc.com';
 
 // https://astro.build/config
 export default defineConfig({
@@ -34,7 +35,7 @@ export default defineConfig({
   image: {
     responsiveStyles: true,
     // ⚠️ 미디어 도메인이 정해지면 바꿔주세요 — 우분투(MinIO)에서 오는 사진을 <Image>로 최적화 허용
-    domains: ['media.jopis.kr'],
+    domains: ['media.xn--o80bq93a37lsnc.com'],
   },
   build: {
     // CSS도 외부 파일로 (CSP 단순화). 단, scoped <style>은 head 인라인 → style-src 'unsafe-inline' 허용.

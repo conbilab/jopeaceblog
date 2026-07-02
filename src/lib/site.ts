@@ -9,7 +9,7 @@ export const SITE = {
   author: '조재빈',
   authorHandle: '조피스',
   // ⚠️ 배포 도메인이 정해지면 바꿔주세요 (astro.config.mjs 의 site 와 일치).
-  url: 'https://jopeaceblog.vercel.app',
+  url: 'https://xn--o80bq93a37lsnc.com', // 피스노트.com
   locale: 'ko_KR',
   lang: 'ko',
   email: 'paigraphy@gmail.com',
