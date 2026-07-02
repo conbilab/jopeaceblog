@@ -7,7 +7,10 @@ import { TYPE_ORDER, TYPES, TOPIC_ORDER, TOPICS, STATUS_ORDER, STATUS } from '..
 const records = await getPublishedRecords();
 const typeCount = (k: string) => records.filter((r) => r.data.type === k).length;
 const topicCount = (k: string) => records.filter((r) => r.data.topic === k).length;
+const statusCount = (k: string) => records.filter((r) => r.data.status === k).length;
+const usedTypes = TYPE_ORDER.filter((k) => typeCount(k) > 0);
 const usedTopics = TOPIC_ORDER.filter((k) => topicCount(k) > 0);
+const usedStatus = STATUS_ORDER.filter((k) => statusCount(k) > 0);
 ---
 
 <BaseLayout title="기록" description="피스노트의 모든 기록 — 생각·느낌·해본 것·일·맛과 장소·배움을 한곳에서.">
@@ -21,7 +24,7 @@ const usedTopics = TOPIC_ORDER.filter((k) => topicCount(k) > 0);
           <span class="frow-label">유형</span>
           <div class="chips" data-group="type">
             <button class="fchip is-active" data-val="all">전체 <span class="fc-n">{records.length}</span></button>
-            {TYPE_ORDER.map((k) => (
+            {usedTypes.map((k) => (
               <button class="fchip" data-val={k} style={`--bg: var(${TYPES[k].bg}); --ink: var(${TYPES[k].ink});`}>{TYPES[k].emoji} {TYPES[k].label} <span class="fc-n">{typeCount(k)}</span></button>
             ))}
           </div>
@@ -37,7 +40,7 @@ const usedTopics = TOPIC_ORDER.filter((k) => topicCount(k) > 0);
           <span class="frow-label">상태</span>
           <div class="chips" data-group="status">
             <button class="fchip fchip--plain is-active" data-val="all">전체</button>
-            {STATUS_ORDER.map((k) => (<button class="fchip fchip--plain" data-val={k}>{STATUS[k].emoji} {STATUS[k].label}</button>))}
+            {usedStatus.map((k) => (<button class="fchip fchip--plain" data-val={k}>{STATUS[k].emoji} {STATUS[k].label}</button>))}
           </div>
         </div>
       </div>

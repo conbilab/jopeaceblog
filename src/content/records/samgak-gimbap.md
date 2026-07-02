@@ -1,7 +1,7 @@
 ---
-title: "\\\"삼각김밥\\"
+title: "삼각김밥"
 date: 2021-12-19
-type: work
+type: creative
 topic: content
 status: completed
 visibility: public

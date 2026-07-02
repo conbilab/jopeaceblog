@@ -1,7 +1,7 @@
 ---
 title: "비에 젖은 분홍토끼 _조피디 초단편001"
 date: 2021-03-04
-type: work
+type: creative
 topic: content
 status: completed
 visibility: public

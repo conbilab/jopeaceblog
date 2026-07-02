@@ -116,6 +116,7 @@
   --t-food-dot: #a8572f;
   --t-learning-dot: #586b7a;
   --t-revision-dot: #8a5a36;
+  --t-creative-bg: #efeae0;  --t-creative-ink: #5f5142;  --t-creative-dot: #7a5a9c;
 }
 
 /* 다크모드(나중) — 라이트 기본 */
@@ -138,4 +139,5 @@
   --t-learning-bg:#262219; --t-learning-ink:#c8bba6; --t-revision-bg:#262219; --t-revision-ink:#c8bba6;
   --t-thought-dot:#9a8cb6; --t-feeling-dot:#c0a578; --t-action-dot:#6fb893; --t-work-dot:#7e97b0;
   --t-food-dot:#cf8a5c; --t-learning-dot:#8ea4b6; --t-revision-dot:#bd8a64;
+  --t-creative-bg:#262219; --t-creative-ink:#c8bba6; --t-creative-dot:#a48fce;
 }

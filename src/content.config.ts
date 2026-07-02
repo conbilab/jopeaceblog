@@ -5,6 +5,7 @@ const RECORD_TYPES = [
   "thought",
   "feeling",
   "action",
+  "creative",
   "work",
   "food-place",
   "learning",

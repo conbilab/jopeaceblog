@@ -14,10 +14,11 @@ export const TYPES: Record<string, TypeMeta> = {
   'food-place':{ key: 'food-place',  label: '먹고 간 곳',  emoji: '🍞', bg: '--t-food-bg',      ink: '--t-food-ink' },
   learning:    { key: 'learning',    label: '배운 것',     emoji: '📖', bg: '--t-learning-bg',  ink: '--t-learning-ink' },
   revision:    { key: 'revision',    label: '고친 것',     emoji: '↻',  bg: '--t-revision-bg',  ink: '--t-revision-ink' },
+  creative:    { key: 'creative',    label: '창작',       emoji: '✍️', bg: '--t-creative-bg',  ink: '--t-creative-ink' },
 };
 export const STANDARD_META: TypeMeta = { key: 'standard', label: '지키고 싶은 것', emoji: '🕊️', bg: '--t-standard-bg', ink: '--t-standard-ink' };
 
-export const TYPE_ORDER: string[] = ['thought', 'feeling', 'action', 'work', 'food-place', 'learning', 'revision'];
+export const TYPE_ORDER: string[] = ['thought', 'feeling', 'action', 'creative', 'work', 'food-place', 'learning', 'revision'];
 
 export function getType(key: string): TypeMeta {
   return TYPES[key] ?? STANDARD_META;

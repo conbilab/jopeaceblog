@@ -1,122 +1,150 @@
 # ============================================================
-#  Sveltia CMS 설정 (Decap CMS 호환)
-#  - 사이트주소.com/admin 에서 GitHub 로그인 → 글 작성/수정 → 저장하면 GitHub에 커밋 → Vercel 자동 배포
-#  - 아래 repo 를 본인 GitHub 저장소로 바꾸고, GitHub OAuth 한 번만 연결하면 됩니다. (README 참고)
+#  피스노트 글쓰기 편집기 (Sveltia CMS · Decap 호환)
+#  사용법: 사이트주소/admin 접속 → GitHub 로그인 → 글 쓰기 / 수정 / 삭제
+#  저장하면 GitHub(conbilab/jopeaceblog)에 커밋되고 Vercel이 자동 배포합니다.
 # ============================================================
 
 backend:
   name: github
-  repo: jopis/jopis-blog        # ← 본인 GitHub "사용자명/저장소명" 으로 변경
+  repo: conbilab/jopeaceblog
   branch: main
-  # Sveltia는 자체 OAuth 클라이언트를 내장하므로 Vercel에 별도 OAuth 서버가 필요 없습니다.
-  # (필요 시 base_url 로 직접 만든 OAuth 프록시를 지정할 수 있음)
-
-# 초안 → 검토 → 발행 워크플로우 (저장해도 바로 공개되지 않고 초안으로 보관 가능)
-publish_mode: editorial_workflow
 
 # 이미지 업로드 위치
 media_folder: "public/uploads"
 public_folder: "/uploads"
 
 locale: ko
-
-# 한국어 UI 라벨
 i18n:
   structure: single_file
   locales: [ko]
   default_locale: ko
 
 collections:
-  # ───────────────── 글(기록) ─────────────────
-  - name: posts
+  # ───────────────── 기록(글) ─────────────────
+  - name: records
     label: "기록 (글)"
     label_singular: "글"
-    description: "일상·작업·생각·맛집·여행·성취 — 모든 기록을 여기서 씁니다."
-    folder: "src/content/posts"
+    description: "생각·느낌·해본 것·창작·배운 것 — 모든 글을 여기서 쓰고 고치고 지웁니다."
+    folder: "src/content/records"
     create: true
-    slug: "{{slug}}"
+    delete: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
     extension: md
     format: frontmatter
-    sortable_fields: [pubDate, title, category]
+    sortable_fields: [date, title, type]
     view_filters:
-      - { label: "작업", field: category, pattern: work }
-      - { label: "생각", field: category, pattern: thought }
-      - { label: "일상", field: category, pattern: daily }
-      - { label: "맛집", field: category, pattern: food }
-      - { label: "여행", field: category, pattern: travel }
-      - { label: "성취", field: category, pattern: win }
+      - { label: "생각한 것", field: type, pattern: thought }
+      - { label: "느낀 것", field: type, pattern: feeling }
+      - { label: "창작", field: type, pattern: creative }
+      - { label: "배운 것", field: type, pattern: learning }
+      - { label: "비공개 초안", field: visibility, pattern: private-draft }
     fields:
       - { name: title, label: "제목", widget: string }
-      - { name: pubDate, label: "발행일", widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD" }
-      - { name: updatedDate, label: "수정일(선택)", widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: false }
-      - name: category
-        label: "코너(카테고리)"
-        widget: select
-        default: daily
-        options:
-          - { label: "🎬 만드는 시간 (작업)", value: work }
-          - { label: "💭 문득 (생각)", value: thought }
-          - { label: "🌿 오늘의 결 (일상)", value: daily }
-          - { label: "🍜 맛의 기록 (맛집)", value: food }
-          - { label: "🧭 바람 따라 (여행)", value: travel }
-          - { label: "🏔️ 발자국 (성취)", value: win }
-      - { name: summary, label: "한 줄 요약", widget: string, required: false, hint: "카드에 보이는 짧은 소개" }
-      - { name: tags, label: "태그", widget: list, required: false, hint: "예: 대전, AI영상, 강의후기" }
-      - { name: cover, label: "대표 이미지", widget: image, required: false, choose_url: false }
-      - { name: coverAlt, label: "이미지 설명(접근성)", widget: string, required: false }
-      - name: growth
-        label: "완성도"
-        widget: select
-        default: evergreen
-        options:
-          - { label: "🌳 완성", value: evergreen }
-          - { label: "🌿 정리 중", value: budding }
-          - { label: "🌱 단상(가볍게)", value: seedling }
-      - { name: featured, label: "대표 글로 고정(홈 상단)", widget: boolean, default: false, required: false }
-      - { name: pinned, label: "최상단 고정", widget: boolean, default: false, required: false }
-      - { name: draft, label: "비공개 초안", widget: boolean, default: false, required: false }
-      # ── 맛집 전용 (작성 시 선택) ──
-      - { name: place, label: "🍜 장소명", widget: string, required: false }
-      - { name: location, label: "🍜 위치(구/동)", widget: string, required: false }
-      - { name: rating, label: "🍜 평점(0~5)", widget: number, required: false, value_type: float, min: 0, max: 5, step: 0.5 }
-      - { name: priceRange, label: "🍜 가격대", widget: string, required: false }
-      - { name: recommend, label: "🍜 추천 포인트", widget: string, required: false }
-      # ── 여행 전용 (작성 시 선택) ──
-      - { name: region, label: "🧭 지역", widget: string, required: false }
-      - { name: companions, label: "🧭 동행", widget: string, required: false }
-      - { name: course, label: "🧭 코스(장소들)", widget: list, required: false }
-      # ── 작업 전용 (작성 시 선택) ──
-      - { name: client, label: "🎬 클라이언트", widget: string, required: false }
-      - { name: role, label: "🎬 역할", widget: string, required: false }
-      - { name: result, label: "🎬 결과(지표)", widget: string, required: false }
-      - { name: videoUrl, label: "🎬 영상 링크", widget: string, required: false }
-      # ── 본문 ──
-      - { name: body, label: "본문", widget: markdown }
-
-  # ───────────────── 이력(연대기) ─────────────────
-  - name: timeline
-    label: "이력 (연대기)"
-    label_singular: "이력 항목"
-    description: "걸어온 길 — 마일스톤을 추가합니다."
-    folder: "src/content/timeline"
-    create: true
-    extension: md
-    format: frontmatter
-    sortable_fields: [year, order]
-    fields:
-      - { name: year, label: "연도(숫자)", widget: number, value_type: int }
-      - { name: date, label: "날짜 표기", widget: string, required: false, hint: '예: "2024.09"' }
-      - { name: title, label: "제목", widget: string }
+      - { name: date, label: "날짜", widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD" }
       - name: type
         label: "유형"
         widget: select
-        default: work
+        default: thought
         options:
-          - { label: "작업", value: work }
-          - { label: "수상/성취", value: award }
-          - { label: "언론", value: press }
-          - { label: "강의", value: lecture }
-          - { label: "설립", value: founding }
-          - { label: "기록", value: life }
-      - { name: order, label: "정렬 순서", widget: number, default: 0, required: false }
-      - { name: description, label: "한 줄 설명", widget: text, required: false }
+          - { label: "💭 생각한 것", value: thought }
+          - { label: "🫧 느낀 것", value: feeling }
+          - { label: "🛠️ 해본 것", value: action }
+          - { label: "✍️ 창작", value: creative }
+          - { label: "📖 배운 것", value: learning }
+          - { label: "↻ 고친 것", value: revision }
+          - { label: "💼 일한 것", value: work }
+          - { label: "🍞 먹고 간 곳", value: food-place }
+      - name: topic
+        label: "주제"
+        widget: select
+        default: life
+        options:
+          - { label: "삶", value: life }
+          - { label: "일", value: work }
+          - { label: "마케팅", value: marketing }
+          - { label: "AI", value: ai }
+          - { label: "콘텐츠", value: content }
+          - { label: "세차의고수", value: sechago }
+          - { label: "영어/교육", value: english }
+          - { label: "맛과 장소", value: place }
+          - { label: "책과 공부", value: book }
+          - { label: "사람과 관계", value: people }
+      - name: status
+        label: "상태"
+        widget: select
+        default: completed
+        options:
+          - { label: "🌳 완성", value: completed }
+          - { label: "🌿 발전 중", value: growing }
+          - { label: "🌱 씨앗", value: seed }
+          - { label: "↻ 수정됨", value: revised }
+      - name: visibility
+        label: "공개 여부"
+        widget: select
+        default: public
+        options:
+          - { label: "공개", value: public }
+          - { label: "조심해서 공개", value: careful }
+          - { label: "비공개 초안(목록에서 숨김)", value: private-draft }
+          - { label: "나중에 공개", value: later }
+          - { label: "익명화 후 공개", value: anonymized }
+      - { name: summary, label: "한 줄 요약", widget: string, required: false }
+      - { name: tags, label: "태그", widget: list, required: false }
+      - { name: cover, label: "대표 이미지", widget: image, required: false }
+      - { name: featured, label: "대표 글로 고정(홈)", widget: boolean, default: false, required: false }
+      - { name: question, label: "남은 질문(선택)", widget: string, required: false }
+      # 먹고 간 곳 전용(선택)
+      - { name: place, label: "🍞 장소명", widget: string, required: false }
+      - { name: location, label: "🍞 위치", widget: string, required: false }
+      - { name: rating, label: "🍞 평점(0~5)", widget: number, required: false, value_type: float, min: 0, max: 5, step: 0.5 }
+      - { name: recommend, label: "🍞 추천", widget: string, required: false }
+      - { name: body, label: "본문", widget: markdown }
+
+  # ───────────────── 일과 프로젝트 ─────────────────
+  - name: projects
+    label: "일과 프로젝트"
+    folder: "src/content/projects"
+    create: true
+    delete: true
+    extension: md
+    format: frontmatter
+    fields:
+      - { name: title, label: "이름", widget: string }
+      - { name: oneliner, label: "한 줄 설명", widget: string }
+      - name: status
+        label: "상태"
+        widget: select
+        default: active
+        options:
+          - { label: "진행 중", value: active }
+          - { label: "완료", value: done }
+          - { label: "보류", value: paused }
+      - name: topic
+        label: "주제"
+        widget: select
+        default: work
+        options: [life, work, marketing, ai, content, sechago, english, place, book, people]
+      - { name: period, label: "기간", widget: string, required: false }
+      - { name: role, label: "역할", widget: string, required: false }
+      - { name: problem, label: "해결하려 한 것", widget: text, required: false }
+      - { name: learned, label: "배운 것", widget: text, required: false }
+      - { name: order, label: "정렬", widget: number, default: 0, required: false }
+      - { name: featured, label: "대표", widget: boolean, default: false, required: false }
+      - { name: body, label: "본문", widget: markdown }
+
+  # ───────────────── 나의 기준 ─────────────────
+  - name: standards
+    label: "나의 기준"
+    folder: "src/content/standards"
+    create: true
+    delete: true
+    extension: md
+    format: frontmatter
+    sortable_fields: [order]
+    fields:
+      - { name: title, label: "제목", widget: string }
+      - { name: summary, label: "한 줄 설명", widget: string }
+      - { name: careful, label: "조심하려는 것", widget: text, required: false }
+      - { name: action, label: "이렇게 행동하려는 것", widget: text, required: false }
+      - { name: order, label: "정렬", widget: number, default: 0 }
+      - { name: body, label: "본문", widget: markdown }
