@@ -24,12 +24,7 @@ const chips = TYPE_ORDER.map((k) => TYPES[k]);
     <div class="wrap hero-inner">
       <span class="hero-kicker">{SITE.titleEn} · 개인 기록장</span>
       <h1 class="hero-name">{SITE.title}</h1>
-      <p class="hero-hand">
-        {SITE.slogan}
-        <svg class="hand-scribble" viewBox="0 0 340 26" fill="none" aria-hidden="true">
-          <path d="M5 17 C 55 6, 110 22, 165 12 S 275 6, 335 16" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
-        </svg>
-      </p>
+      <p class="hero-slogan">{SITE.slogan}</p>
       <p class="hero-sub">{SITE.subtitle}</p>
       <p class="hero-body">
         이곳은 나를 포장하는 공간이 아니라, 사람으로 살아가며 보고 느끼고 행동한 것을 남기는 기록장입니다.
@@ -157,9 +152,8 @@ const chips = TYPE_ORDER.map((k) => TYPES[k]);
   .hero-inner { position: relative; z-index: 1; max-width: 44rem; }
   .hero-kicker { font-size: 0.76rem; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-primary-ink); }
   .hero-name { font-size: var(--step-5); font-weight: 800; letter-spacing: -0.05em; line-height: 1.0; color: var(--ink-strong); margin-top: 0.7rem; }
-  /* 손글씨 슬로건 + 손그림 밑줄 */
-  .hero-hand { position: relative; display: inline-block; margin-top: 1rem; font-family: var(--font-hand); font-size: clamp(2rem, 4.2vw, 3.2rem); line-height: 1.1; color: var(--color-primary); padding-bottom: 0.3em; }
-  .hand-scribble { position: absolute; left: 0; right: 4%; bottom: -0.1em; width: 96%; height: auto; color: var(--color-primary); opacity: 0.9; }
+  /* 감성 슬로건 — 따뜻한 한글 세리프(고운바탕) */
+  .hero-slogan { margin-top: 1.15rem; font-family: var(--font-serif-ko); font-weight: 700; font-size: clamp(1.55rem, 3.2vw, 2.5rem); line-height: 1.45; letter-spacing: -0.015em; color: var(--color-primary-ink); max-width: 22ch; word-break: keep-all; }
   .hero-sub { margin-top: 1.4rem; font-size: clamp(1.12rem, 2.1vw, 1.45rem); font-weight: 700; color: var(--ink-strong); line-height: 1.5; letter-spacing: -0.02em; max-width: 30ch; }
   .hero-body { margin-top: 1.5rem; font-size: 1.05rem; line-height: 1.85; color: var(--ink-soft); max-width: 42ch; }
   .hero-cta { display: flex; flex-wrap: wrap; gap: 0.8rem; align-items: center; margin-top: 2rem; }

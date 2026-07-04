@@ -52,7 +52,8 @@
 
   /* ---- 타이포 ---- */
   --font-sans: 'Pretendard', 'Noto Sans KR', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-serif: 'Fraunces', 'Pretendard', Georgia, serif;
+  --font-serif: 'Fraunces', 'Gowun Batang', 'Pretendard', Georgia, serif;
+  --font-serif-ko: 'Gowun Batang', 'Fraunces', 'Pretendard', serif;
   --font-hand: 'Nanum Pen', 'Fraunces', cursive;
   --fs-body: 17px;
   --lh-body: 1.75;

@@ -12,7 +12,7 @@ export const SITE = {
   url: 'https://xn--o80bq93a37lsnc.com', // 피스노트.com
   locale: 'ko_KR',
   lang: 'ko',
-  email: 'paigraphy@gmail.com',
+  email: 'jopd_prod@kakao.com',
   repo: 'conbilab/jopeaceblog',
 } as const;
 
@@ -20,7 +20,7 @@ export const SITE = {
 export const SOCIAL: { label: string; href: string; handle?: string }[] = [
   { label: '유튜브', href: '#', handle: '배워서남주는조피디' },
   { label: '인스타그램', href: '#', handle: '@jopis' },
-  { label: '이메일', href: 'mailto:paigraphy@gmail.com' },
+  { label: '이메일', href: 'mailto:jopd_prod@kakao.com' },
 ];
 
 /** 상단 내비게이션 (스펙 7번) */
