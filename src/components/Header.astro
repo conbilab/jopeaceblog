@@ -7,6 +7,7 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path === href 
 <header class="nav">
   <div class="wrap nav-inner">
     <a href="/" class="brand" aria-label={`${SITE.title} 홈`}>
+      <img class="brand-face" src="/images/caricature-face.png" alt="" width="32" height="32" />
       <span class="brand-ko">{SITE.title}</span>
       <span class="brand-en">{SITE.titleEn}</span>
     </a>
@@ -38,7 +39,8 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path === href 
   .nav { position: sticky; top: 0; z-index: var(--z-nav); background: color-mix(in srgb, var(--color-bg) 88%, transparent); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); font-family: var(--font-ui); }
   @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) { .nav { background: var(--color-bg); } }
   .nav-inner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; height: 4rem; }
-  .brand { display: flex; align-items: baseline; gap: 0.5rem; }
+  .brand { display: flex; align-items: center; gap: 0.5rem; }
+  .brand-face { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; background: var(--card-2); border: 1.5px solid var(--line-strong); flex: none; }
   .brand-ko { font-weight: 800; font-size: 1.18rem; letter-spacing: -0.04em; color: var(--ink-strong); }
   .brand-en { font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-primary); font-weight: 600; }
   .brand:hover .brand-en { color: var(--color-primary-deep); }

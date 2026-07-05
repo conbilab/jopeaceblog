@@ -2,6 +2,8 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { SITE } from '../lib/site';
 
+const roles = ['마케팅', '영상 제작', '콘텐츠', '강의·교육', 'AI·자동화', '글쓰기'];
+
 const sections = [
   {
     h: '나는 누구인가',
@@ -57,51 +59,79 @@ const sections = [
 
 <BaseLayout title="소개" description={SITE.description}>
   <section class="about">
-    <div class="wrap measure">
-      <span class="eyebrow">소개</span>
-      <div class="about-top">
-        <img class="about-avatar" src="/images/profile.jpg" alt="조피스(조재빈)" width="112" height="112" />
-        <div class="about-top-txt">
-          <h1 class="page-title">조피스, 조재빈입니다.</h1>
-          <p class="about-slogan">“{SITE.slogan}”</p>
+    <div class="wrap">
+      <header class="ab-hero">
+        <img class="ab-avatar" src="/images/profile.jpg" alt="조피스(조재빈)" width="320" height="234" />
+        <div class="ab-hero-txt">
+          <span class="eyebrow">소개</span>
+          <h1 class="ab-name">조피스 <span>조재빈</span></h1>
+          <p class="ab-role">영상 · 마케팅 · 콘텐츠 · 강의 · AI 자동화</p>
+          <p class="ab-slogan">“{SITE.slogan}”</p>
         </div>
-        <img class="about-cari" src="/images/caricature-face.png" alt="" aria-hidden="true" width="84" height="98" />
+      </header>
+
+      <div class="ab-chips">
+        {roles.map((r) => (<span class="ab-chip">{r}</span>))}
       </div>
 
-      <div class="about-body">
-        {sections.map((s) => (
+      <div class="ab-body">
+        {sections.map((s, i) => (
           <section class="ab-sec">
-            <h2 class="ab-h">{s.h}</h2>
-            {s.body.map((p) => (<p class="ab-p" set:html={p} />))}
+            <div class="ab-sec-h">
+              <span class="ab-num">{String(i + 1).padStart(2, '0')}</span>
+              <h2 class="ab-h">{s.h}</h2>
+            </div>
+            <div class="ab-sec-body">
+              {s.body.map((p) => (<p class="ab-p" set:html={p} />))}
+            </div>
           </section>
         ))}
-        <div class="contact-box">함께 일하거나 이야기 나누고 싶다면 <b>{SITE.email}</b> 또는 <a href="/contact">문의 페이지</a>로 편하게 연락 주세요.</div>
+
+        <div class="contact-box">
+          함께 일하거나 이야기 나누고 싶다면 <b>{SITE.email}</b> 또는 <a href="/contact">함께 일하기</a>로 편하게 연락 주세요.
+        </div>
       </div>
     </div>
   </section>
 </BaseLayout>
 
 <style>
-  .about { padding-top: clamp(2rem, 4vw, 3rem); }
+  .about { padding-top: clamp(2rem, 4vw, 3rem); padding-bottom: 2rem; }
   .eyebrow { font-family: var(--font-ui); font-size: 0.76rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-primary); }
-  .about-top { display: flex; align-items: center; gap: 1.1rem; margin-top: 0.9rem; padding-bottom: 1.6rem; border-bottom: 1px solid var(--line); }
-  .about-avatar { width: 112px; height: 112px; border-radius: 50%; object-fit: cover; border: 3px solid var(--card); box-shadow: var(--shadow-md); flex: none; }
-  .about-top-txt { flex: 1; min-width: 0; }
-  .about-cari { width: 84px; height: auto; opacity: 0.9; flex: none; align-self: flex-end; }
-  .page-title { font-size: var(--step-3); font-weight: 800; letter-spacing: -0.04em; color: var(--ink-strong); line-height: 1.15; }
-  .about-slogan { margin-top: 0.6rem; font-family: var(--font-slogan); font-weight: 400; font-size: 1.4rem; line-height: 1.5; color: var(--color-primary-ink); word-break: keep-all; }
-  .about-body { margin-top: 2rem; display: flex; flex-direction: column; gap: 2rem; }
-  .ab-h { font-size: 1.22rem; font-weight: 800; color: var(--ink-strong); margin-bottom: 0.8rem; letter-spacing: -0.02em; }
-  .ab-p { font-size: 1.07rem; line-height: 1.9; color: var(--ink-soft); margin-bottom: 0.7rem; word-break: keep-all; }
+
+  /* 히어로 */
+  .ab-hero { display: flex; align-items: center; gap: 1.6rem; padding-bottom: 1.8rem; }
+  .ab-avatar { width: clamp(220px, 34vw, 320px); height: auto; border-radius: 14px; box-shadow: var(--shadow-lg); flex: none; }
+  .ab-name { font-size: var(--step-3); font-weight: 800; letter-spacing: -0.04em; color: var(--ink-strong); margin-top: 0.5rem; line-height: 1.1; }
+  .ab-name span { font-size: 0.5em; font-weight: 700; color: var(--ink-mute); letter-spacing: 0; margin-left: 0.4rem; }
+  .ab-role { margin-top: 0.5rem; font-family: var(--font-ui); font-size: 0.9rem; font-weight: 700; letter-spacing: 0.02em; color: var(--ink-soft); }
+  .ab-slogan { margin-top: 0.7rem; font-family: var(--font-slogan); font-weight: 400; font-size: clamp(1.2rem, 2.6vw, 1.55rem); line-height: 1.5; color: var(--color-primary-ink); word-break: keep-all; }
+
+  /* 역할 칩 */
+  .ab-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; padding: 1.4rem 0; border-block: 1px solid var(--line); }
+  .ab-chip { font-family: var(--font-ui); font-size: 0.82rem; font-weight: 700; color: var(--ink-soft); background: var(--bg-soft); border: 1px solid var(--line); border-radius: var(--r-pill); padding: 0.4em 0.9em; }
+
+  /* 본문 섹션 */
+  .ab-body { margin-top: 2.4rem; max-width: 46rem; }
+  .ab-sec { display: grid; grid-template-columns: 3.5rem 1fr; gap: 0.5rem 1.2rem; margin-bottom: 2.4rem; }
+  .ab-sec-h { display: contents; }
+  .ab-num { font-family: var(--font-ui); font-size: 0.95rem; font-weight: 800; color: var(--color-primary); padding-top: 0.35rem; letter-spacing: 0.02em; }
+  .ab-h { grid-column: 2; font-size: 1.28rem; font-weight: 800; color: var(--ink-strong); letter-spacing: -0.02em; margin-bottom: 0.9rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--line-soft); }
+  .ab-sec-body { grid-column: 2; }
+  .ab-p { font-size: 1.06rem; line-height: 1.9; color: var(--ink-soft); margin-bottom: 0.7rem; word-break: keep-all; }
   .ab-p :global(b) { color: var(--ink-strong); font-weight: 800; }
   .ab-p :global(a) { color: var(--color-primary); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: color-mix(in srgb, var(--color-primary) 40%, transparent); }
   .ab-p :global(a):hover { text-decoration-color: currentColor; }
-  .contact-box { margin-top: 0.5rem; padding: 1.2rem 1.4rem; background: var(--bg-soft); border: 1px solid var(--line); border-radius: var(--r-card); font-size: 1rem; line-height: 1.7; color: var(--ink-soft); }
+
+  .contact-box { max-width: 46rem; padding: 1.3rem 1.5rem; background: var(--bg-soft); border: 1px solid var(--line); border-radius: var(--r-card); font-size: 1rem; line-height: 1.7; color: var(--ink-soft); }
   .contact-box b { color: var(--color-primary-ink); }
   .contact-box a { color: var(--color-primary); font-weight: 700; }
-  @media (max-width: 560px) {
-    .about-top { flex-wrap: wrap; gap: 0.8rem; }
-    .about-cari { display: none; }
-    .about-avatar { width: 84px; height: 84px; }
+
+  @media (max-width: 620px) {
+    .ab-hero { flex-direction: column; text-align: center; gap: 1rem; }
+    .ab-avatar { width: 104px; height: 104px; }
+    .ab-sec { grid-template-columns: 1fr; gap: 0; }
+    .ab-num { display: none; }
+    .ab-h, .ab-sec-body { grid-column: 1; }
   }
 </style>

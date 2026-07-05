@@ -4,10 +4,8 @@ import gallery from '../data/gallery.json';
 
 const counts: Record<string, number> = {};
 for (const p of gallery.photos) counts[p.cat] = (counts[p.cat] || 0) + 1;
-// 사진이 있는 카테고리만 노드로
 const nodes = gallery.cats.filter((c) => counts[c.key] > 0);
 const center = gallery.cats.find((c) => c.key === 'life') ?? nodes[0];
-const dataIsland = JSON.stringify({ photos: gallery.photos, labels: Object.fromEntries(gallery.cats.map((c) => [c.key, c.label])) });
 ---
 
 <BaseLayout title="갤러리" description="조피스가 그동안 한 일을 얼기설기 펼쳐둔 사진 갤러리 — 영상·강의·사업·마케팅·일상.">
@@ -15,33 +13,37 @@ const dataIsland = JSON.stringify({ photos: gallery.photos, labels: Object.fromE
     <div class="wrap">
       <span class="eyebrow">기록 · 갤러리</span>
       <h1 class="pg-h">그동안 한 일을, <em>얼기설기</em> 펼쳐둡니다.</h1>
-      <p class="lead">가운데에서 뻗어나온 갈래를 눌러보세요. 그 분야의 사진들이 펼쳐집니다.</p>
+      <p class="lead">가운데에서 뻗어나온 갈래를 눌러 그 분야만 볼 수 있어요.</p>
 
-      <div class="graph" id="graph">
+      <div class="graph">
         <svg class="edges" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
           {nodes.filter((n) => n.key !== center.key).map((n) => (
             <line x1={center.x} y1={center.y} x2={n.x} y2={n.y} />
           ))}
         </svg>
         {nodes.map((n) => (
-          <button
-            class:list={['node', { center: n.key === center.key }]}
-            data-cat={n.key}
-            style={`left:${n.x}%;top:${n.y}%`}
-          >
+          <button class="node" data-cat={n.key} style={`left:${n.x}%;top:${n.y}%`}>
             <span class="node-label">{n.label}</span>
             <span class="node-count">{counts[n.key]}</span>
           </button>
         ))}
-        <span class="ghint">↑ 갈래를 클릭하면 사진이 펼쳐져요</span>
       </div>
 
-      <div class="shelf" id="shelf">
-        <div class="shelf-head">
-          <h2 id="shelf-title">영상 제작</h2>
-          <span id="shelf-count" class="shelf-count"></span>
+      <div class="shelf-head">
+        <h2 id="shelf-title">전체 사진</h2>
+        <div class="shelf-tools">
+          <span id="shelf-count" class="shelf-count">{gallery.photos.length}장</span>
+          <button id="reset-btn" class="reset-btn" hidden>전체 보기 ↺</button>
         </div>
-        <div class="photos" id="photos"></div>
+      </div>
+
+      <div class="photos" id="photos">
+        {gallery.photos.map((p) => (
+          <button class="ph" data-cat={p.cat} data-src={`/images/gallery/${p.file}`} data-cap={p.cap}>
+            <img loading="lazy" src={`/images/gallery/${p.file}`} alt={p.cap || '조피스 작업 사진'} width="300" height="225" />
+            {p.cap && <span class="ph-cap">{p.cap}</span>}
+          </button>
+        ))}
       </div>
     </div>
   </section>
@@ -53,38 +55,34 @@ const dataIsland = JSON.stringify({ photos: gallery.photos, labels: Object.fromE
       <figcaption id="lb-cap"></figcaption>
     </figure>
   </div>
-
-  <script type="application/json" id="gal-data" set:html={dataIsland} />
 </BaseLayout>
 
 <script>
   const el = (id: string) => document.getElementById(id)!;
-  const data = JSON.parse(el('gal-data').textContent || '{}');
-  const photos: { file: string; cat: string; cap: string }[] = data.photos || [];
-  const labels: Record<string, string> = data.labels || {};
   const photosBox = el('photos');
   const title = el('shelf-title');
   const countEl = el('shelf-count');
+  const resetBtn = el('reset-btn');
+  const phs = [...document.querySelectorAll<HTMLElement>('.ph')];
+  const nodes = [...document.querySelectorAll<HTMLElement>('.node')];
 
-  function show(cat: string) {
-    const list = photos.filter((p) => p.cat === cat);
-    title.textContent = labels[cat] || cat;
-    countEl.textContent = `${list.length}장`;
-    photosBox.innerHTML = list
-      .map(
-        (p) =>
-          `<button class="ph" data-src="/images/gallery/${p.file}" data-cap="${(p.cap || '').replace(/"/g, '&quot;')}">` +
-          `<img loading="lazy" src="/images/gallery/${p.file}" alt="${(p.cap || '').replace(/"/g, '&quot;')}" />` +
-          (p.cap ? `<span class="ph-cap">${p.cap}</span>` : '') +
-          `</button>`
-      )
-      .join('');
-    document.querySelectorAll('.node').forEach((n) => n.classList.toggle('active', (n as HTMLElement).dataset.cat === cat));
+  function filter(cat: string | null, label?: string) {
+    let n = 0;
+    phs.forEach((p) => {
+      const show = !cat || p.dataset.cat === cat;
+      p.classList.toggle('hide', !show);
+      if (show) n++;
+    });
+    title.textContent = cat ? label || cat : '전체 사진';
+    countEl.textContent = `${n}장`;
+    resetBtn.hidden = !cat;
+    nodes.forEach((b) => b.classList.toggle('active', b.dataset.cat === cat));
   }
 
-  document.querySelectorAll('.node').forEach((n) =>
-    n.addEventListener('click', () => show((n as HTMLElement).dataset.cat || 'video'))
+  nodes.forEach((b) =>
+    b.addEventListener('click', () => filter(b.dataset.cat || null, b.querySelector('.node-label')?.textContent || ''))
   );
+  resetBtn.addEventListener('click', () => filter(null));
 
   // 라이트박스
   const lb = el('lightbox'), lbImg = el('lb-img') as HTMLImageElement, lbCap = el('lb-cap');
@@ -94,17 +92,12 @@ const dataIsland = JSON.stringify({ photos: gallery.photos, labels: Object.fromE
     lbImg.src = b.dataset.src || '';
     lbCap.textContent = b.dataset.cap || '';
     lb.hidden = false;
+    document.body.style.overflow = 'hidden';
   });
-  const closeLb = () => (lb.hidden = true);
+  const closeLb = () => { lb.hidden = true; document.body.style.overflow = ''; };
   el('lb-close').addEventListener('click', closeLb);
   lb.addEventListener('click', (e) => { if (e.target === lb) closeLb(); });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLb(); });
-
-  // 기본: 사진 가장 많은 갈래
-  const first = [...document.querySelectorAll('.node')].sort(
-    (a, b) => Number((b as HTMLElement).querySelector('.node-count')!.textContent) - Number((a as HTMLElement).querySelector('.node-count')!.textContent)
-  )[0] as HTMLElement | undefined;
-  show(first?.dataset.cat || 'video');
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !lb.hidden) closeLb(); });
 </script>
 
 <style>
@@ -115,28 +108,28 @@ const dataIsland = JSON.stringify({ photos: gallery.photos, labels: Object.fromE
   .lead { margin-top: 0.7rem; color: var(--ink-soft); font-size: 1.05rem; }
 
   /* 얼기설기 그래프 */
-  .graph { position: relative; margin-top: 1.8rem; height: clamp(340px, 46vw, 480px); background: radial-gradient(120% 120% at 50% 42%, #211d16 0%, #14110c 100%); border: 1px solid var(--line); border-radius: var(--r-lg); overflow: hidden; }
+  .graph { position: relative; margin-top: 1.6rem; height: clamp(260px, 34vw, 340px); background: radial-gradient(120% 120% at 50% 42%, #211d16 0%, #14110c 100%); border: 1px solid var(--line); border-radius: var(--r-lg); overflow: hidden; }
   .edges { position: absolute; inset: 0; width: 100%; height: 100%; }
   .edges line { stroke: rgba(209, 133, 90, 0.35); stroke-width: 0.25; }
-  .node { position: absolute; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; gap: 0.25rem; padding: 0.55rem 0.9rem; background: #2a2620; border: 1px solid #47403360; border-radius: var(--r-pill); color: #ece3cf; cursor: pointer; transition: transform var(--dur) var(--ease), background var(--dur), border-color var(--dur); white-space: nowrap; }
+  .node { position: absolute; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; gap: 0.2rem; padding: 0.5rem 0.85rem; background: #2a2620; border: 1px solid #4740336a; border-radius: var(--r-pill); color: #ece3cf; cursor: pointer; transition: transform var(--dur) var(--ease), background var(--dur); white-space: nowrap; }
   .node:hover { transform: translate(-50%, -50%) scale(1.07); background: #35302870; }
   .node.active { background: var(--color-primary); border-color: var(--color-primary); color: #fff; box-shadow: 0 6px 20px rgba(209, 85, 42, 0.4); }
-  .node.center { background: #3a3229; border-color: #5a5040; }
-  .node.center.active { background: var(--color-primary); }
-  .node-label { font-size: 0.9rem; font-weight: 700; }
-  .node-count { font-family: var(--font-ui); font-size: 0.7rem; opacity: 0.75; }
-  .ghint { position: absolute; left: 50%; bottom: 0.7rem; transform: translateX(-50%); font-size: 0.72rem; color: #8c8676; }
+  .node-label { font-size: 0.88rem; font-weight: 700; }
+  .node-count { font-family: var(--font-ui); font-size: 0.7rem; opacity: 0.72; }
 
-  /* 사진 선반 */
-  .shelf { margin-top: 2rem; }
-  .shelf-head { display: flex; align-items: baseline; gap: 0.7rem; margin-bottom: 1.1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--line); }
+  .shelf-head { display: flex; align-items: baseline; justify-content: space-between; gap: 0.7rem; margin-top: 2rem; margin-bottom: 1.1rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--line); }
   .shelf-head h2 { font-size: var(--step-2); font-weight: 800; letter-spacing: -0.03em; color: var(--ink-strong); }
+  .shelf-tools { display: flex; align-items: center; gap: 0.9rem; }
   .shelf-count { font-family: var(--font-ui); font-size: 0.85rem; color: var(--color-primary); font-weight: 700; }
+  .reset-btn { font-size: 0.82rem; font-weight: 700; color: var(--ink-soft); padding: 0.35em 0.8em; border: 1px solid var(--line-strong); border-radius: var(--r-pill); }
+  .reset-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
+
   .photos { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 1rem; }
   .ph { position: relative; border-radius: var(--r-card); overflow: hidden; background: var(--bg-soft); border: 1px solid var(--line); cursor: pointer; aspect-ratio: 4 / 3; }
+  .ph.hide { display: none; }
   .ph img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform var(--dur) var(--ease); }
   .ph:hover img { transform: scale(1.05); }
-  .ph-cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 1.4rem 0.7rem 0.6rem; font-size: 0.78rem; line-height: 1.4; color: #fff; background: linear-gradient(transparent, rgba(0, 0, 0, 0.8)); opacity: 0; transition: opacity var(--dur); text-align: left; }
+  .ph-cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 1.4rem 0.7rem 0.6rem; font-size: 0.78rem; line-height: 1.4; color: #fff; background: linear-gradient(transparent, rgba(0, 0, 0, 0.82)); opacity: 0; transition: opacity var(--dur); text-align: left; }
   .ph:hover .ph-cap { opacity: 1; }
 
   /* 라이트박스 */
@@ -149,8 +142,8 @@ const dataIsland = JSON.stringify({ photos: gallery.photos, labels: Object.fromE
   .lb-close:hover { background: rgba(255, 255, 255, 0.24); }
 
   @media (max-width: 560px) {
-    .node { padding: 0.4rem 0.6rem; }
-    .node-label { font-size: 0.78rem; }
-    .photos { grid-template-columns: 1fr 1fr; }
+    .node { padding: 0.35rem 0.6rem; }
+    .node-label { font-size: 0.76rem; }
+    .photos { grid-template-columns: 1fr 1fr; gap: 0.7rem; }
   }
 </style>
