@@ -1,0 +1,119 @@
+---
+// 방문자 첫 진입(세션당 1회) 시 뜨는 수문장/환영 오버레이
+---
+
+<div class="gate" id="gate" hidden aria-hidden="true">
+  <div class="gate-card">
+    <!-- 선택 -->
+    <div class="g-screen" data-screen="choose">
+      <img class="g-cari" src="/images/caricature-welcome.jpg" alt="반겨주는 조피스 캐리커처" width="120" height="120" />
+      <h2 class="g-title">똑똑똑, 누구세요?</h2>
+      <p class="g-sub">피스노트에 오신 걸 환영해요.<br />어느 쪽이신가요?</p>
+      <div class="g-btns">
+        <button class="g-btn g-btn-primary" data-go="guard">나야, 조피스 🔑</button>
+        <button class="g-btn" data-go="welcome">조피스가 궁금해요 👀</button>
+      </div>
+      <button class="g-skip" data-dismiss>그냥 둘러볼래요 →</button>
+    </div>
+
+    <!-- 수문장(암호) -->
+    <div class="g-screen" data-screen="guard" hidden>
+      <img class="g-cari g-cari-guard" src="/images/caricature-guard.jpg" alt="문지기 조피스" width="120" height="120" />
+      <h2 class="g-title">암호를 대라…👁️</h2>
+      <p class="g-sub">조피스 본인만 아는 암호를 입력하세요.</p>
+      <form class="g-form" id="g-form">
+        <input type="password" id="g-pass" placeholder="암호" autocomplete="off" aria-label="암호" />
+        <button class="g-btn g-btn-primary" type="submit">확인</button>
+      </form>
+      <p class="g-msg" id="g-msg" aria-live="polite"></p>
+      <button class="g-skip" data-go="choose">← 돌아가기</button>
+    </div>
+
+    <!-- 환영 -->
+    <div class="g-screen" data-screen="welcome" hidden>
+      <img class="g-cari" src="/images/caricature-welcome.jpg" alt="환영하는 조피스" width="120" height="120" />
+      <h2 class="g-title" id="g-wtitle">반가워요! 👋</h2>
+      <p class="g-sub" id="g-wsub">천천히 둘러보세요.<br />제가 겪고 배운 것을 다정하게 적어뒀어요.</p>
+      <button class="g-btn g-btn-primary" data-dismiss>들어가기 →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const gate = document.getElementById('gate');
+  if (gate && !sessionStorage.getItem('pn-gate-seen')) {
+    const screens = gate.querySelectorAll<HTMLElement>('[data-screen]');
+    const go = (name: string) => {
+      screens.forEach((s) => (s.hidden = s.dataset.screen !== name));
+      gate.classList.toggle('scary', name === 'guard');
+    };
+    const dismiss = () => {
+      try { sessionStorage.setItem('pn-gate-seen', '1'); } catch (e) {}
+      gate.classList.add('closing');
+      document.body.style.overflow = '';
+      setTimeout(() => { gate.hidden = true; }, 420);
+    };
+
+    gate.hidden = false;
+    gate.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+
+    gate.querySelectorAll<HTMLElement>('[data-go]').forEach((b) => b.addEventListener('click', () => go(b.dataset.go!)));
+    gate.querySelectorAll('[data-dismiss]').forEach((b) => b.addEventListener('click', dismiss));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !gate.hidden) dismiss(); });
+
+    const PASS = ['peacenote', '피스노트', 'vltmshxm'];
+    const form = document.getElementById('g-form') as HTMLFormElement | null;
+    const msg = document.getElementById('g-msg')!;
+    form?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const v = (document.getElementById('g-pass') as HTMLInputElement).value.trim().toLowerCase();
+      if (PASS.includes(v)) {
+        document.getElementById('g-wtitle')!.textContent = '어서 오세요, 조피스님 🙌';
+        document.getElementById('g-wsub')!.innerHTML = '문 열어드렸어요.<br />오늘도 좋은 기록 남기세요.';
+        go('welcome');
+      } else {
+        msg.textContent = '음… 그 암호가 아닌데요? (힌트: peacenote)';
+        form.classList.add('shake');
+        setTimeout(() => form.classList.remove('shake'), 500);
+      }
+    });
+  }
+</script>
+
+<style>
+  .gate { position: fixed; inset: 0; z-index: var(--z-top); display: grid; place-items: center; padding: 1.5rem;
+    background: radial-gradient(120% 120% at 50% 35%, #2a2118 0%, #14100b 100%); opacity: 1; transition: opacity 0.4s var(--ease); }
+  .gate[hidden] { display: none; }
+  .gate.closing { opacity: 0; }
+  .gate.scary { background: radial-gradient(120% 120% at 50% 30%, #3a1710 0%, #0d0806 100%); }
+
+  .gate-card { width: min(420px, 100%); background: var(--card); border-radius: var(--r-hero); padding: clamp(1.8rem, 5vw, 2.6rem) clamp(1.4rem, 4vw, 2rem); text-align: center; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5); animation: gate-pop 0.5s var(--ease-out); }
+  @keyframes gate-pop { from { transform: translateY(16px) scale(0.96); opacity: 0; } to { transform: none; opacity: 1; } }
+
+  .g-cari { width: 120px; height: 120px; object-fit: cover; border-radius: 50%; border: 4px solid var(--card-2); box-shadow: var(--shadow-md); margin-bottom: 1.1rem; }
+  .g-cari-guard { border-color: #d1552a; box-shadow: 0 0 0 3px rgba(209, 85, 42, 0.3), 0 8px 24px rgba(0, 0, 0, 0.4); animation: guard-breathe 2.2s ease-in-out infinite; }
+  @keyframes guard-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+
+  .g-title { font-size: 1.5rem; font-weight: 800; color: var(--ink-strong); letter-spacing: -0.03em; }
+  .g-sub { margin-top: 0.6rem; color: var(--ink-soft); font-size: 0.98rem; line-height: 1.6; }
+  .g-btns { display: flex; flex-direction: column; gap: 0.6rem; margin-top: 1.6rem; }
+  .g-btn { font: inherit; font-weight: 700; font-size: 1rem; padding: 0.85rem 1rem; border-radius: var(--r-md); border: 1px solid var(--line-strong); background: var(--card-2); color: var(--ink-strong); cursor: pointer; transition: transform var(--dur-fast), background var(--dur-fast), border-color var(--dur-fast); }
+  .g-btn:hover { transform: translateY(-1px); border-color: var(--color-primary); }
+  .g-btn-primary { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
+  .g-btn-primary:hover { background: var(--color-primary-deep); }
+  .g-skip { margin-top: 1.1rem; font-size: 0.86rem; color: var(--ink-mute); font-weight: 600; }
+  .g-skip:hover { color: var(--color-primary); }
+
+  .g-form { display: flex; gap: 0.5rem; margin-top: 1.4rem; }
+  .g-form input { flex: 1; font: inherit; font-size: 1rem; padding: 0.8rem 0.9rem; border-radius: var(--r-md); border: 1px solid var(--line-strong); background: var(--bg); color: var(--ink-strong); }
+  .g-form input:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(209, 85, 42, 0.2); }
+  .g-form .g-btn { flex: none; }
+  .g-msg { margin-top: 0.8rem; font-size: 0.86rem; color: var(--color-primary-deep); min-height: 1.2em; }
+  .shake { animation: shake 0.45s; }
+  @keyframes shake { 0%, 100% { transform: translateX(0); } 20%, 60% { transform: translateX(-7px); } 40%, 80% { transform: translateX(7px); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .gate-card, .g-cari-guard, .shake { animation: none; }
+  }
+</style>
