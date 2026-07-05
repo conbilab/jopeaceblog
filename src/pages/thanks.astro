@@ -1,0 +1,51 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import letters from '../data/thanks.json';
+
+const rot = [-1.6, 1.3, -0.8, 1.6, -1.2, 0.9, -1.9, 1.1];
+---
+
+<BaseLayout title="감사" description="수업·컨설팅에서 남겨주신 후기를 편지처럼 옮겨 담았습니다. 이름·상호·연락처는 모두 가렸습니다.">
+  <section class="thanks">
+    <div class="wrap">
+      <span class="eyebrow">감사</span>
+      <h1 class="pg-h">받은 마음을, <em>편지</em>처럼 붙여둡니다.</h1>
+      <p class="lead">수업·컨설팅에서 남겨주신 후기를 편지 느낌으로 다시 담았습니다.</p>
+      <div class="note">📮 실제로 받은 감사 후기 <b>{letters.length}통</b>을 편지로 옮겼어요. <b>이름·상호·연락처는 모두 가렸습니다.</b></div>
+
+      <div class="letters">
+        {letters.map((l, i) => (
+          <figure class="letter" style={`--r:${rot[i % rot.length]}deg`}>
+            <blockquote class="q">{l.q}</blockquote>
+            <figcaption class="sig">
+              <span class="who">— {l.who}</span>
+              <span class="role">{l.role}</span>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .thanks { padding-top: clamp(2rem, 4vw, 3rem); padding-bottom: 3rem; }
+  .eyebrow { font-family: var(--font-ui); font-size: 0.76rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-primary); }
+  .pg-h { font-size: var(--step-3); font-weight: 800; letter-spacing: -0.03em; color: var(--ink-strong); margin-top: 0.6rem; }
+  .pg-h em { font-style: normal; color: var(--color-primary); }
+  .lead { margin-top: 0.7rem; color: var(--ink-soft); font-size: 1.05rem; }
+  .note { margin-top: 1.2rem; padding: 0.9rem 1.2rem; background: var(--color-primary-soft); border: 1px solid color-mix(in srgb, var(--color-primary) 25%, transparent); border-radius: var(--r-md); font-size: 0.92rem; color: var(--color-primary-deep); line-height: 1.6; }
+  .note b { font-weight: 800; }
+
+  .letters { margin-top: 2.2rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 1.7rem; }
+  .letter { position: relative; background: linear-gradient(#fffdf7, #f7f0e0); border: 1px solid #e7dcc4; border-radius: 6px; padding: 1.7rem 1.5rem 1.4rem; box-shadow: 0 10px 26px rgba(80, 60, 30, 0.13), 0 2px 0 #efe6d2; transform: rotate(var(--r)); transition: transform var(--dur) var(--ease), box-shadow var(--dur); }
+  .letter:hover { transform: rotate(0deg) translateY(-3px); box-shadow: 0 16px 36px rgba(80, 60, 30, 0.18); }
+  .letter::before { content: ''; position: absolute; top: -9px; left: 22px; width: 64px; height: 18px; background: rgba(209, 85, 42, 0.16); border: 1px dashed rgba(209, 85, 42, 0.4); transform: rotate(-4deg); border-radius: 2px; }
+  .q { font-size: 1.02rem; line-height: 1.75; color: #3a3226; word-break: keep-all; }
+  .sig { margin-top: 1.1rem; padding-top: 0.9rem; border-top: 1px dashed #dfd3ba; display: flex; align-items: baseline; justify-content: space-between; gap: 0.6rem; }
+  .sig .who { font-size: 0.86rem; font-weight: 700; color: var(--color-primary-deep); }
+  .sig .role { font-size: 0.76rem; color: var(--ink-mute); white-space: nowrap; }
+
+  :root[data-theme='dark'] .letter { background: linear-gradient(#26221a, #201d16); border-color: #3a352c; box-shadow: 0 10px 26px rgba(0,0,0,0.35); }
+  :root[data-theme='dark'] .q { color: #d8cfbb; }
+</style>

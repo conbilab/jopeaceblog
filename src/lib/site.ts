@@ -27,6 +27,8 @@ export const SOCIAL: { label: string; href: string; handle?: string }[] = [
 export const NAV: { label: string; href: string }[] = [
   { label: '기록', href: '/records' },
   { label: '하는 일', href: '/doing' },
+  { label: '갤러리', href: '/gallery' },
+  { label: '감사', href: '/thanks' },
   { label: '나의 기준', href: '/standards' },
   { label: '소개', href: '/about' },
   { label: '문의', href: '/contact' },
