@@ -31,7 +31,7 @@ export const NAV: { label: string; href: string }[] = [
   { label: '감사', href: '/thanks' },
   { label: '나의 기준', href: '/standards' },
   { label: '소개', href: '/about' },
-  { label: '문의', href: '/contact' },
+  { label: '함께 일하기', href: '/contact' },
 ];
 
 /** giscus는 한국에서 GitHub 사용률이 낮아 기본 비활성 (Phase 2에서 구글/카카오 로그인으로 교체 예정) */
