@@ -26,11 +26,9 @@ export const SOCIAL: { label: string; href: string; handle?: string }[] = [
 /** 상단 내비게이션 (스펙 7번) */
 export const NAV: { label: string; href: string }[] = [
   { label: '기록', href: '/records' },
+  { label: '하는 일', href: '/doing' },
   { label: '나의 기준', href: '/standards' },
-  { label: '일과 프로젝트', href: '/work' },
-  { label: '좋았던 것들', href: '/good-things' },
-  { label: '배운 것들', href: '/learning' },
-  { label: '지금', href: '/now' },
+  { label: '소개', href: '/about' },
   { label: '문의', href: '/contact' },
 ];
 
