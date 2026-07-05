@@ -35,7 +35,7 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path === href 
 </header>
 
 <style>
-  .nav { position: sticky; top: 0; z-index: var(--z-nav); background: color-mix(in srgb, var(--color-bg) 88%, transparent); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
+  .nav { position: sticky; top: 0; z-index: var(--z-nav); background: color-mix(in srgb, var(--color-bg) 88%, transparent); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); font-family: var(--font-ui); }
   @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) { .nav { background: var(--color-bg); } }
   .nav-inner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; height: 4rem; }
   .brand { display: flex; align-items: baseline; gap: 0.5rem; }

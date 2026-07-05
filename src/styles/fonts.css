@@ -66,6 +66,24 @@
   src: url('/fonts/GowunBatang-700.woff2') format('woff2');
 }
 
+/* 고운돋움(Gowun Dodum) — 본문·UI 기본 (조피스 선택). 단일 굵기(400), 굵게는 합성 */
+@font-face {
+  font-family: 'Gowun Dodum';
+  font-weight: 400 800;
+  font-style: normal;
+  font-display: swap;
+  src: url('/fonts/GowunDodum-400.woff2') format('woff2');
+}
+
+/* 스타일리시(Stylish) — 슬로건·헤드라인 시그니처 */
+@font-face {
+  font-family: 'Stylish';
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url('/fonts/Stylish-400.woff2') format('woff2');
+}
+
 /* Fraunces — variable (opsz, wght, SOFT, WONK). 라틴 디스플레이/숫자/날짜/키커 전용 */
 @font-face {
   font-family: 'Fraunces';

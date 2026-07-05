@@ -51,7 +51,9 @@
   --selection: rgba(209, 85, 42, 0.18);
 
   /* ---- 타이포 ---- */
-  --font-sans: 'Pretendard', 'Noto Sans KR', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-sans: 'Gowun Dodum', 'Pretendard', 'Noto Sans KR', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-ui: 'Pretendard', 'Gowun Dodum', system-ui, sans-serif;
+  --font-slogan: 'Stylish', 'Gowun Batang', 'Gowun Dodum', serif;
   --font-serif: 'Fraunces', 'Gowun Batang', 'Pretendard', Georgia, serif;
   --font-serif-ko: 'Gowun Batang', 'Fraunces', 'Pretendard', serif;
   --font-hand: 'Nanum Pen', 'Fraunces', cursive;

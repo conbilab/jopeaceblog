@@ -18,24 +18,23 @@ const chips = TYPE_ORDER.map((k) => TYPES[k]);
 ---
 
 <BaseLayout>
-  <!-- 1) HERO -->
-  <section class="hero">
+  <!-- 1) HERO (2안 · 다크) -->
+  <section class="hero hero-dark">
     <div class="hero-grid" aria-hidden="true"></div>
     <div class="wrap hero-inner">
       <span class="hero-kicker">{SITE.titleEn} · 개인 기록장</span>
-      <h1 class="hero-name">{SITE.title}</h1>
       <p class="hero-slogan">{SITE.slogan}</p>
       <p class="hero-sub">{SITE.subtitle}</p>
       <p class="hero-body">
         이곳은 나를 포장하는 공간이 아니라, 사람으로 살아가며 보고 느끼고 행동한 것을 남기는 기록장입니다.
-        마케팅, AI, 콘텐츠, 사업 운영, 배움, 맛과 장소, 그리고 지키고 싶은 기준들을 이곳에 기록합니다.
+        마케팅, AI, 콘텐츠, 사업 운영, 배움, 맛과 장소, 그리고 지키고 싶은 기준들을 이곳에 적어둡니다.
       </p>
       <div class="hero-cta">
         <a href="/records" class="btn btn-primary">최근 기록 보기</a>
-        <a href="#subscribe" class="btn btn-ghost">매일 생각 구독하기</a>
-        <a href="/now" class="btn btn-text">지금 하는 일 →</a>
+        <a href="/about" class="btn btn-ghost-d">조피스 소개 →</a>
       </div>
     </div>
+    <img class="hero-cari" src="/images/caricature-light.png" alt="" aria-hidden="true" width="220" height="260" loading="eager" />
   </section>
 
   <!-- 2) FEATURED -->
@@ -141,22 +140,26 @@ const chips = TYPE_ORDER.map((k) => TYPES[k]);
 </script>
 
 <style>
-  /* HERO */
-  .hero { position: relative; overflow: hidden; padding-block: clamp(3rem, 7vw, 6rem) clamp(2.5rem, 5vw, 4rem); border-bottom: 1px solid var(--line); }
-  /* '+' 격자 텍스처 (윤소정 감성) — 아주 은은하게 */
+  /* HERO — 2안 · 다크 */
+  .hero { position: relative; overflow: hidden; padding-block: clamp(3.2rem, 7vw, 6.5rem) clamp(2.8rem, 5vw, 4.5rem); }
+  .hero-dark { background: #1c1913; color: #f3ede0; }
+  /* '+' 격자 텍스처 — 다크 위 아주 은은하게 */
   .hero-grid { position: absolute; inset: 0; z-index: 0; pointer-events: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Cpath d='M24 20v8M20 24h8' stroke='%23c9b89a' stroke-width='1'/%3E%3C/svg%3E");
-    background-size: 48px 48px; opacity: 0.4;
+    background-size: 48px 48px; opacity: 0.13;
     -webkit-mask-image: radial-gradient(120% 90% at 78% 0%, #000 0%, transparent 62%);
     mask-image: radial-gradient(120% 90% at 78% 0%, #000 0%, transparent 62%); }
-  .hero-inner { position: relative; z-index: 1; max-width: 44rem; }
-  .hero-kicker { font-size: 0.76rem; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--color-primary-ink); }
-  .hero-name { font-size: var(--step-5); font-weight: 800; letter-spacing: -0.05em; line-height: 1.0; color: var(--ink-strong); margin-top: 0.7rem; }
-  /* 감성 슬로건 — 따뜻한 한글 세리프(고운바탕) */
-  .hero-slogan { margin-top: 1.15rem; font-family: var(--font-serif-ko); font-weight: 700; font-size: clamp(1.55rem, 3.2vw, 2.5rem); line-height: 1.45; letter-spacing: -0.015em; color: var(--color-primary-ink); max-width: 22ch; word-break: keep-all; }
-  .hero-sub { margin-top: 1.4rem; font-size: clamp(1.12rem, 2.1vw, 1.45rem); font-weight: 700; color: var(--ink-strong); line-height: 1.5; letter-spacing: -0.02em; max-width: 30ch; }
-  .hero-body { margin-top: 1.5rem; font-size: 1.05rem; line-height: 1.85; color: var(--ink-soft); max-width: 42ch; }
-  .hero-cta { display: flex; flex-wrap: wrap; gap: 0.8rem; align-items: center; margin-top: 2rem; }
+  .hero-inner { position: relative; z-index: 1; max-width: 46rem; }
+  .hero-kicker { font-family: var(--font-ui); font-size: 0.76rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--color-primary); }
+  /* 시그니처 슬로건 — 스타일리시 */
+  .hero-slogan { margin-top: 1.3rem; font-family: var(--font-slogan); font-weight: 400; font-size: clamp(2.1rem, 5.2vw, 3.7rem); line-height: 1.42; letter-spacing: 0; color: #fbf7ec; max-width: 24ch; word-break: keep-all; }
+  .hero-sub { margin-top: 1.5rem; font-family: var(--font-ui); font-size: clamp(1.1rem, 2vw, 1.4rem); font-weight: 700; color: #ece3cf; line-height: 1.55; letter-spacing: -0.02em; max-width: 32ch; }
+  .hero-body { margin-top: 1.4rem; font-size: 1.03rem; line-height: 1.9; color: #b3ab99; max-width: 44ch; }
+  .hero-cta { display: flex; flex-wrap: wrap; gap: 0.8rem; align-items: center; margin-top: 2.2rem; }
+  .btn-ghost-d { border: 1px solid rgba(243,237,224,0.28); color: #f3ede0; background: transparent; }
+  .btn-ghost-d:hover { border-color: var(--color-primary); color: #fff; background: rgba(209,85,42,0.16); }
+  .hero-cari { position: absolute; right: clamp(0.5rem, 4vw, 4rem); bottom: 0; width: clamp(120px, 18vw, 210px); height: auto; opacity: 0.94; z-index: 1; pointer-events: none; filter: drop-shadow(0 8px 26px rgba(0,0,0,0.45)); }
+  @media (max-width: 760px) { .hero-cari { display: none; } }
 
   /* section heads */
   .sec-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; }
