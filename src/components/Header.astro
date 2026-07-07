@@ -13,9 +13,18 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path === href 
     </a>
 
     <nav class="nav-links" aria-label="주요 메뉴">
-      {NAV.map((item) => (
-        <a href={item.href} class:list={['nav-link', { active: isActive(item.href) }]} aria-current={isActive(item.href) ? 'page' : undefined}>{item.label}</a>
-      ))}
+      {NAV.map((item) => {
+        const ext = item.href.startsWith('http');
+        return (
+          <a
+            href={item.href}
+            class:list={['nav-link', { active: isActive(item.href) }]}
+            aria-current={isActive(item.href) ? 'page' : undefined}
+            target={ext ? '_blank' : undefined}
+            rel={ext ? 'noopener noreferrer' : undefined}
+          >{item.label}{ext && <span class="ext" aria-hidden="true">↗</span>}</a>
+        );
+      })}
     </nav>
 
     <div class="nav-actions">
@@ -29,8 +38,10 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path === href 
 
   <nav class="mobile-nav" id="mobile-nav" aria-label="모바일 메뉴" inert>
     <div class="wrap">
-      {NAV.map((item) => (<a href={item.href} class:list={['m-link', { active: isActive(item.href) }]}>{item.label}</a>))}
-      <a href="/about" class="m-link">소개</a>
+      {NAV.map((item) => {
+        const ext = item.href.startsWith('http');
+        return (<a href={item.href} class:list={['m-link', { active: isActive(item.href) }]} target={ext ? '_blank' : undefined} rel={ext ? 'noopener noreferrer' : undefined}>{item.label}{ext && <span class="ext" aria-hidden="true"> ↗</span>}</a>);
+      })}
     </div>
   </nav>
 </header>
@@ -45,8 +56,9 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path === href 
   .brand-en { font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-primary); font-weight: 600; }
   .brand:hover .brand-en { color: var(--color-primary-deep); }
 
-  .nav-links { display: flex; gap: 1.35rem; align-items: center; }
-  .nav-link { font-size: 0.92rem; font-weight: 600; color: var(--ink-soft); position: relative; padding: 0.3rem 0; transition: color var(--dur-fast); }
+  .nav-links { display: flex; gap: 1.05rem; align-items: center; }
+  .nav-link { font-size: 0.9rem; font-weight: 600; color: var(--ink-soft); position: relative; padding: 0.3rem 0; transition: color var(--dur-fast); white-space: nowrap; }
+  .ext { font-size: 0.72em; opacity: 0.55; margin-left: 0.1em; }
   .nav-link::after { content: ''; position: absolute; left: 0; right: 0; bottom: -0.15rem; height: 1.5px; background: var(--color-primary); transform: scaleX(0); transform-origin: center; transition: transform var(--dur) var(--ease); }
   .nav-link:hover { color: var(--color-primary); }
   .nav-link:hover::after, .nav-link.active::after { transform: scaleX(1); }
@@ -71,7 +83,7 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path === href 
   .m-link { padding: 0.8rem 0.2rem; font-size: 1.05rem; font-weight: 700; color: var(--ink-strong); border-bottom: 1px solid var(--line-soft); }
   .m-link.active { color: var(--color-primary); }
 
-  @media (max-width: 880px) {
+  @media (max-width: 1024px) {
     .nav-links { display: none; }
     .nav-burger { display: flex; }
     .mobile-nav { display: block; }

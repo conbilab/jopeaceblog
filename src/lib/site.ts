@@ -31,6 +31,7 @@ export const NAV: { label: string; href: string }[] = [
   { label: '감사', href: '/thanks' },
   { label: '나의 기준', href: '/standards' },
   { label: '소개', href: '/about' },
+  { label: '활동', href: 'https://link-peaceworks.jopd-prod.workers.dev/' },
   { label: '함께 일하기', href: '/contact' },
 ];
 

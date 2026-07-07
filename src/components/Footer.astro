@@ -22,7 +22,10 @@ const more = [
       <nav class="foot-col" aria-label="둘러보기">
         <h3>둘러보기</h3>
         <ul role="list">
-          {NAV.filter((n) => n.href !== '/contact').map((n) => (<li><a href={n.href}>{n.label}</a></li>))}
+          {NAV.filter((n) => n.href !== '/contact').map((n) => {
+            const ext = n.href.startsWith('http');
+            return (<li><a href={n.href} target={ext ? '_blank' : undefined} rel={ext ? 'noopener noreferrer' : undefined}>{n.label}</a></li>);
+          })}
         </ul>
       </nav>
 
